@@ -5,7 +5,7 @@ using GigaSOM, DataFrames, XLSX, CSV, Test, Random, Distributed
     include("io.jl")
 
     #apply the batch GigaSOM algorithm to the data, train it and test it
-    include("batch.jl")
+    # include("batch.jl")
 
     #apply the parallel GigaSOM algorithm to the data, train it and test it
     include("parallel.jl")

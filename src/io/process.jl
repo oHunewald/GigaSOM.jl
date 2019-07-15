@@ -78,11 +78,11 @@ Read in the fcs raw, add sample id, subset the columns and transform
 """
 function createDaFrame(fcsRaw, md, panel)
 
-    # extract lineage markers
-    lineageMarkers, functionalMarkers = getMarkers(panel)
-
+    lineageMarkers = vec(panel.Antigen[panel.Lineage .== 1, : ])
+    functionalMarkers = vec(panel.Antigen[panel.Functional .== 1, : ])
+    cleanNames!(lineageMarkers)
+    cleanNames!(functionalMarkers)
     transformData(fcsRaw)
-
     for i in eachindex(md.file_name)
         df = fcsRaw[md.file_name[i]]
         df[:sample_id] = string(md.sample_id[i])
