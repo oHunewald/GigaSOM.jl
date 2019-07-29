@@ -15,6 +15,7 @@ module GigaSOM
     using FileIO
     using DistributedArrays
     using XLSX
+    using PyCall
 
     include("structs.jl")
     include("core.jl")
