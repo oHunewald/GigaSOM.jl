@@ -1,7 +1,3 @@
-
-checkDir()
-cdw = pwd()
-
 #fix the seed
 Random.seed!(1)
 
@@ -25,5 +21,3 @@ som2 = trainGigaSOM(som2, dfSom, epochs = 1)
 winners = mapToGigaSOM(som2, dfSom)
 
 rmprocs(workers())
-
-cd(cdw)
