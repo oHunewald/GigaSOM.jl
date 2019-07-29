@@ -6,7 +6,7 @@ cdw = pwd()
 Random.seed!(1)
 
 if nprocs() <= 2
-    p = addprocs(2)
+    p = addprocs(2, topology=:master_worker)
 end
 @everywhere using DistributedArrays
 @everywhere using GigaSOM
