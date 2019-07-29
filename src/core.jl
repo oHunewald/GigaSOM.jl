@@ -93,7 +93,8 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
     end
 
     nWorkers = nprocs()
-    dTrain = distribute(train)
+    sharedTrain = SharedArray(train)
+    (irange, jrange) = (1:size(sharedTrain,1), 1:size(sharedTrain,2))
 
     for j in 1:epochs
 
@@ -102,13 +103,14 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
      if nWorkers > 1
          # distribution across workers
          R = Array{Future}(undef,nWorkers, 1)
-          @sync for p in workers()
-              @async R[p] = @spawnat p begin
-                 doEpoch(localpart(dTrain), codes, dm, kernelFun, r, false)
+          @sync for (p, pid) in enumerate(workers())
+              @async R[p] = @spawnat pid begin
+                  doEpoch(sharedTrain, myrange(sharedTrain)...,
+                        1:size(sharedTrain,1), codes, dm, kernelFun, r, false)
               end
           end
 
-          @sync for p in workers()
+          @sync for (p, pid) in enumerate(workers())
               tmp = fetch(R[p])
               globalSumNumerator += tmp[1]
               globalSumDenominator += tmp[2]
@@ -151,8 +153,8 @@ vectors and the adjustment in radius after each epoch.
 - `r`: training radius
 - `toroidal`: if true, the SOM is toroidal.
 """
-function doEpoch(x::Array{Float64, 2}, codes::Array{Float64, 2}, dm::Array{Float64, 2},
-                kernelFun::Function, r::Number, toroidal::Bool)
+function doEpoch(x::SharedArray{Float64, 2}, u, irange, jrange, codes::Array{Float64, 2},
+                dm::Array{Float64, 2}, kernelFun::Function, r::Number, toroidal::Bool)
 
      nRows::Int64 = size(x, 1)
      nCodes::Int64 = size(codes, 1)
@@ -162,7 +164,7 @@ function doEpoch(x::Array{Float64, 2}, codes::Array{Float64, 2}, dm::Array{Float
      sumDenominator = zeros(Float64, size(codes)[1])
 
      # for each sample in dataset / trainingsset
-     for s in 1:nRows
+     for s in irange
 
          sample = vec(x[s, : ])
          bmuIdx = findBmu(codes, sample)
