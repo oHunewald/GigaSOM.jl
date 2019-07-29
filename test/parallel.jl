@@ -18,13 +18,6 @@ end
 cc = map(Symbol, lineageMarkers)
 dfSom = daf.fcstable[:,cc]
 
-# concatenate the dataset for performance testing
-n = 0
-for i in 1:n
-    global dfSom
-    dfSom = vcat(dfSom, dfSom)
-end
-
 som2 = initGigaSOM(dfSom, 10, 10)
 
 @testset "Dimensions - parallel" begin
