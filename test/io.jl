@@ -7,19 +7,17 @@ as this function is only the basic parsing of the binary
 FCS, we need to see what functionality is missing and
 extend this in the original package
 =#
+using GigaSOM, DataFrames, XLSX, CSV, Test, Random, Distributed, SHA, JSON, PyCall
+
+fcsparser = pyimport("fcsparser")
+
 dataPath = ("../data_felD1")
 cd(dataPath)
 md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
-fcsparser = pyimport("fcsparser")
-meta, data = fcsparser.parse(md.file_name[1], reformat_meta=true)
-
-# get the channel names
-df = meta["_channels_"]."\$PnS"
 # two values are empty, do not try to parse them
-markers = [convert(String, i) for i in df.values if i != nothing]
-cleanNames!(markers)
+# markers = [convert(String, i) for i in df.values if i != nothing]
 
 lineageMarkers = vec(panel.Antigen[panel.Lineage .== 1, : ])
 cleanNames!(lineageMarkers)
@@ -27,23 +25,18 @@ functionalMarkers = vec(panel.Antigen[panel.Functional .== 1, : ])
 cleanNames!(functionalMarkers)
 
 # check if all lineageMarkers are in markers
-issubset(lineageMarkers, markers)
-issubset(functionalMarkers, markers)
+# issubset(lineageMarkers, markers)
+# issubset(functionalMarkers, markers)
 
-fcsColNames = [Symbol(s) for s in data._info_axis]
-data = DataFrame(data.values)
-names!(data, fcsColNames)
-
-fcsRaw = readFlowset(md.file_name)
-cleanNames!(fcsRaw)
+fcsRaw = readFlowset(md, fcsparser)
 
 # create daFrame file
-daf = createDaFrame(fcsRaw, md, panel)
+daf = createDaFrame(fcsRaw, md, panel, lineageMarkers, functionalMarkers)
 
 # change the directory back to the current directory
-cd(cwd)
+# cd(cwd)
 
-CSV.write(genDataPath*"/daf.csv", daf.fcstable)
+CSV.write(dataPath*"/daf.csv", daf.fcstable)
 
 # @testset "Cleaning names" begin
 #     for i in eachindex(lineageMarkers)
@@ -74,4 +67,4 @@ CSV.write(genDataPath*"/daf.csv", daf.fcstable)
 #     cd(cwd)
 # end
 
-cd(cwd)
+# cd(cwd)
