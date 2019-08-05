@@ -7,6 +7,9 @@ as this function is only the basic parsing of the binary
 FCS, we need to see what functionality is missing and
 extend this in the original package
 =#
+# ENV["PYTHON"] = Sys.which("PYTHON")
+ENV["PYTHON"] = "/usr/local/bin/python3.6"
+
 using GigaSOM, DataFrames, XLSX, CSV, Test, Random, Distributed, SHA, JSON, PyCall
 
 fcsparser = pyimport("fcsparser")
@@ -36,7 +39,7 @@ daf = createDaFrame(fcsRaw, md, panel, lineageMarkers, functionalMarkers)
 # change the directory back to the current directory
 # cd(cwd)
 
-CSV.write(dataPath*"/daf.csv", daf.fcstable)
+# CSV.write(dataPath*"/daf.csv", daf.fcstable)
 
 # @testset "Cleaning names" begin
 #     for i in eachindex(lineageMarkers)
