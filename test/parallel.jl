@@ -38,9 +38,17 @@ som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
 
+rmprocs(workers())
 #test parallel
 # @testset "Parallel" begin
 codes = som2.codes
+
+# pwd()
+# cd(homedir()*basedir)
+# pwd()
+include("../src/io/cCluster.jl")
+
+mc =  cc_plus(codes)
 #     @test size(codes) == (100,10)
 #
 dfCodes = DataFrame(codes)
@@ -69,6 +77,6 @@ CSV.write("parallelWinners.csv", winners)
 #
 # end
 #
-rmprocs(workers())
+
 #
 # cd(cdw)
