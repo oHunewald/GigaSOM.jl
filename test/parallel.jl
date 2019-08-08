@@ -1,6 +1,6 @@
 
 #fix the seed
-Random.seed!(1)
+# Random.seed!(1)
 
 if nprocs() <= 2
     p = addprocs(2, topology=:master_worker)
@@ -22,24 +22,21 @@ rmprocs(workers())
 
 # extract the codes for consensus clustering
 codes = som2.codes
-
-include("../src/io/cCluster.jl")
+include(homedir()*"/work/GigaSOM.jl/src/io/cCluster.jl")
 # retrive the cluster ids
 mc =  cc_plus(codes)
 
 cell_clustering = mc[winners.index]
 
-insertcols!(dfSom, 23, cc=cell_clustering)
+dfSom.cell_clustering = cell_clustering
 
 using Statistics
 # median expression values per som node
-expr_median = aggregate(dfSom, [:cc], median)
+expr_median = aggregate(dfSom, :cell_clustering, median)
 
-
+CSV.write("expr_med_R10.csv", expr_median)
+pwd()
 sampleId = daf.fcstable[ : , :sample_id]
 
-
-# dfCodes = DataFrame(codes)
-# names!(dfCodes, Symbol.(som2.colNames))
-# CSV.write("parallelDfCodes.csv", dfCodes)
-# CSV.write("parallelWinners.csv", winners)
+cc_tbl = DataFrame(id = cell_clustering)
+CSV.write("cell_clustering_R10.csv", cc_tbl)
