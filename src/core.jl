@@ -78,6 +78,7 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
         r = √(som.xdim^2 + som.ydim^2) / 2
         @info "The radius has been determined automatically."
     end
+	timeConstant = nEpochs/log(r)
 
     dm = distMatrix(som.grid, som.toroidal)
 
@@ -218,7 +219,7 @@ function mapToGigaSOM(som::Som, data::DataFrame)
              end
          end
 
-         @sync begin 
+         @sync begin
 	     for (p, pid) in enumerate(sort!(workers()))
                  append!(vis, fetch(R[p]))
              end
@@ -228,4 +229,10 @@ function mapToGigaSOM(som::Som, data::DataFrame)
     end
 
     return DataFrame(index = vis)
+end
+
+
+function getRadius(initRadius::Float64, iteration::Int64, timeConstant::Float64)
+
+	return initRadius * exp(-iteration / timeConstant)
 end
