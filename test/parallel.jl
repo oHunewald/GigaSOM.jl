@@ -3,7 +3,7 @@
 # Random.seed!(1)
 
 if nprocs() <= 2
-    p = addprocs(2, topology=:master_worker)
+    p = addprocs(4, topology=:master_worker)
 end
 @everywhere using DistributedArrays
 @everywhere using GigaSOM
@@ -31,12 +31,19 @@ cell_clustering = mc[winners.index]
 dfSom.cell_clustering = cell_clustering
 
 using Statistics
+using LinearAlgebra
 # median expression values per som node
 expr_median = aggregate(dfSom, :cell_clustering, median)
+expr_median_norm = deepcopy(expr_median)
+# normalize by columns for visualization
+for i in 1:size(expr_median, 2)
+    expr_median_norm[:, i] = normalize(expr_median[:, i])
 
-CSV.write("expr_med_R10.csv", expr_median)
-pwd()
-sampleId = daf.fcstable[ : , :sample_id]
+end
+
+CSV.write("expr_med.csv", expr_median)
+CSV.write("expr_med_norm", expr_median_norm)
+# sampleId = daf.fcstable[ : , :sample_id]
 
 cc_tbl = DataFrame(id = cell_clustering)
-CSV.write("cell_clustering_R10.csv", cc_tbl)
+CSV.write("cell_clustering.csv", cc_tbl)
