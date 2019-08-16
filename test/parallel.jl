@@ -41,9 +41,9 @@ for i in 1:size(expr_median, 2)
 
 end
 
-CSV.write("expr_med.csv", expr_median)
-CSV.write("expr_med_norm", expr_median_norm)
+CSV.write("pbmc_expr_med.csv", expr_median)
+CSV.write("pbmc_expr_med_norm", expr_median_norm)
 # sampleId = daf.fcstable[ : , :sample_id]
 
 cc_tbl = DataFrame(id = cell_clustering)
-CSV.write("cell_clustering.csv", cc_tbl)
+CSV.write("pbmc_cell_clustering.csv", cc_tbl)
