@@ -68,12 +68,14 @@ can be provided to modify the distance-dependent training. The function must fit
 to the signature fun(x, r) where x is an arbitrary distance and r is a parameter
 controlling the function and the return value is between 0.0 and 1.0.
 """
-function trainGigaSOM(train::DataFrame, epochs)
-
-    train = convertTrainingData(train)
+function trainGigaSOM(datasize; epochs::Int64)
 
     nWorkers = nprocs()
-    dTrain = distribute(train)
+
+    partData = Int64(ceil(datasize / (nWorkers-1)))
+
+    println("workers: $nWorkers")
+    println("partData: $partData")
 
     for j in 1:epochs
 
@@ -84,7 +86,7 @@ function trainGigaSOM(train::DataFrame, epochs)
          R = Array{Future}(undef,nWorkers, 1)
           @sync for p in workers()
               @async R[p] = @spawnat p begin
-                 doEpoch(localpart(dTrain))
+                 doEpoch(partData)
               end
           end
      end
@@ -106,13 +108,10 @@ vectors and the adjustment in radius after each epoch.
 - `r`: training radius
 - `toroidal`: if true, the SOM is toroidal.
 """
-function doEpoch(x::Array{Float64, 2})
-
-     nRows::Int64 = size(x, 1)
-
-     i = 0
+function doEpoch(partData)
+    i = 0
      # for each sample in dataset / trainingsset
-     for s in 1:nRows
+     for s in 1:partData
 
          i += s
 
