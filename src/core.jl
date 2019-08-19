@@ -93,28 +93,11 @@ function trainGigaSOM(datasize; epochs::Int64)
     end
 end
 
-
-"""
-    doEpoch(x::Array{Float64}, codes::Array{Float64}, dm::Array{Float64},
-            kernelFun::Function, r::Number, toroidal::Bool)
-
-vectors and the adjustment in radius after each epoch.
-
-# Arguments:
-- `x`: training Data
-- `codes`: Codebook
-- `dm`: distance matrix of all neurons of the SOM
-- `kernelFun`: distance kernel function of type fun(x, r)
-- `r`: training radius
-- `toroidal`: if true, the SOM is toroidal.
-"""
 function doEpoch(partData)
     i = 0
-     # for each sample in dataset / trainingsset
+     
      for s in 1:partData
-
          i += s
-
      end
 
      return i

@@ -1,4 +1,4 @@
-using GigaSOM, DataFrames, XLSX, CSV, Test, Random, Distributed
+using GigaSOM, Distributed
 
 if nprocs() <= 2
     p = addprocs(2, topology=:master_worker)
