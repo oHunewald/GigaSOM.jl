@@ -32,17 +32,28 @@ dfSom.cell_clustering = cell_clustering
 
 using Statistics
 using LinearAlgebra
+using StatsBase
 # median expression values per som node
 expr_median = aggregate(dfSom, :cell_clustering, median)
-expr_median_norm = deepcopy(expr_median)
-# normalize by columns for visualization
-for i in 1:size(expr_median, 2)
-    expr_median_norm[:, i] = normalize(expr_median[:, i])
+# expr_median_norm = deepcopy(expr_median)
 
-end
+# apply uniform scaling to all features (columns)
+# get the cell clustering column
+cc_aggregated = expr_median.cell_clustering
+# remove the cell clustering column
+tmp = expr_median[:, filter(x -> x != :cell_clustering, names(expr_median))]
+# get the column names
+c_names = names(tmp)
+tmp_matrix = Matrix(tmp)
+dt = fit(UnitRangeTransform, tmp_matrix')
+expr_med_norm = StatsBase.transform(dt, tmp_matrix')
+expr_med_norm = DataFrame(expr_med_norm')
+names!(expr_med_norm, c_names)
+# put back the column cell clustering
+expr_med_norm[:cell_clustering] = cc_aggregated
 
 CSV.write("fedl1_smaller_update_med.csv", expr_median)
-# CSV.write("feld1_r1_med_norm", expr_median_norm)
+CSV.write("feld1_r1_med_norm.csv", expr_med_norm)
 # sampleId = daf.fcstable[ : , :sample_id]
 
 cc_tbl = DataFrame(id = cell_clustering)
