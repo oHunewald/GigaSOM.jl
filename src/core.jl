@@ -119,10 +119,10 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
 			globalSumDenominator += sumDenominator
 		end
 
-     r = getRadius(rStart, j, timeConstant)
+		r = getRadius(rStart, j, "exp", epochs)
 
-     println("Radius: $r")
-     codes = globalSumNumerator ./ globalSumDenominator
+		println("Radius: $r")
+		codes = globalSumNumerator ./ globalSumDenominator
     end
 
     som.codes[:,:] = codes[:,:]
@@ -225,7 +225,26 @@ function mapToGigaSOM(som::Som, data::DataFrame)
 end
 
 
-function getRadius(initRadius::Float64, iteration::Int64, timeConstant::Float64)
+"""
+    getRadius(initRadius::Float64, iteration::Int64, decay::String, epochs::Int64)
+Return a new neighbourhood radius
+# Arguments
+- `initRadius`: Initial Radius
+- `iteration`: Training iteration
+- `decay`: Linear of Exponential decay
+- `epochs`: Total number of epochs
+Data must have the same number of dimensions as the training dataset
+and will be normalised with the same parameters.
+"""
+function getRadius(initRadius::Float64, iteration::Int64, decay::String, epochs::Int64)
 
-	return initRadius * exp(-iteration / timeConstant)
+	if decay == "linear"
+		# timeConstant is delta R in previous code
+		timeConstant = (initRadius - 1.0) / epochs
+		return initRadius - (iteration * timeConstant)
+	elseif decay == "exp"
+		timeConstant = epochs / log(initRadius)
+		return initRadius * exp(-iteration / timeConstant)
+	end
+
 end
