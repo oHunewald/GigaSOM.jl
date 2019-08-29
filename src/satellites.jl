@@ -38,14 +38,14 @@ for same values of r).
 # Arguments
 
 """
-# function gaussianKernel(x::Array{Float64, 1}, r::Float64)::Array{Float64, 1}
-#
-#     return Distributions.pdf.(Distributions.Normal(0.0,r/3), x)
-# end
-
 function gaussianKernel(x, r::Float64)
-    return exp.(x.^2 .* (-1 / r^2))
+
+    return Distributions.pdf.(Distributions.Normal(0.0,r/3), x)
 end
+
+# function gaussianKernel(x, r::Float64)
+#     return exp.(x.^2 .* (-1 / r^2))
+# end
 
 """
     distMatrix(grid::Array, toroidal::Bool)::Array{Float64, 2}
