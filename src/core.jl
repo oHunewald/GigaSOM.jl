@@ -69,7 +69,7 @@ to the signature fun(x, r) where x is an arbitrary distance and r is a parameter
 controlling the function and the return value is between 0.0 and 1.0.
 """
 function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussianKernel,
-                    rStart = 0.0, epochs = 10)
+						rStart = 0.0, rFinal=0.1, epochs=10)
 
     train = convertTrainingData(train)
 
@@ -79,7 +79,6 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
         @info "The radius has been determined automatically."
     end
 
-	timeConstant = epochs/log(rStart)
 	r = rStart
 
     dm = distMatrix(som.grid, som.toroidal)
@@ -96,12 +95,14 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
 
 		println("Epoch: $j")
 
+		nnTree = BruteTree(Array{Float64,2}(codes'))
+
 		if nWorkers > 1
 			# distribution across workers
 			R = Array{Future}(undef,nWorkers, 1)
 			@sync for (p, pid) in enumerate(workers())
 			  @async R[p] = @spawnat pid begin
-			     doEpoch(localpart(dTrain), codes, dm, kernelFun, r, false)
+			     doEpoch(localpart(dTrain), codes, nnTree)
 			  end
 			end
 
@@ -112,17 +113,18 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
 			end
 		else
 			# only batch mode
-			sumNumerator, sumDenominator = doEpoch(localpart(dTrain), codes, dm,
-			                                        kernelFun, r, false)
+			sumNumerator, sumDenominator = doEpoch(localpart(dTrain), codes, nnTree)
 
 			globalSumNumerator += sumNumerator
 			globalSumDenominator += sumDenominator
 		end
 
 		r = getRadius(rStart, j, "exp", epochs)
-
 		println("Radius: $r")
-		codes = globalSumNumerator ./ globalSumDenominator
+
+		wEpoch = kernelFun(dm, r)
+
+		codes = (wEpoch * globalSumNumerator) ./ (wEpoch * globalSumDenominator)
     end
 
     som.codes[:,:] = codes[:,:]
@@ -145,33 +147,23 @@ vectors and the adjustment in radius after each epoch.
 - `r`: training radius
 - `toroidal`: if true, the SOM is toroidal.
 """
-function doEpoch(x::Array{Float64, 2}, codes::Array{Float64, 2}, dm::Array{Float64, 2},
-                kernelFun::Function, r::Number, toroidal::Bool)
+function doEpoch(x::Array{Float64, 2}, codes::Array{Float64, 2}, nnTree)
 
-     nRows::Int64 = size(x, 1)
-     nCodes::Int64 = size(codes, 1)
-
-     # initialise numerator and denominator with 0's
      sumNumerator = zeros(Float64, size(codes))
      sumDenominator = zeros(Float64, size(codes)[1])
 
      # for each sample in dataset / trainingsset
-     for s in 1:nRows
+     for s in 1:size(x, 1)
 
-         sample = vec(x[s, : ])
-         bmuIdx = findBmu(codes, sample)
+		 (bmuIdx, bmuDist) = knn(nnTree, x[s, :], 1)
 
-         # for each node in codebook get distances to bmu and multiply it
-         dist = kernelFun(dm[bmuIdx, :], r)
+		 target = bmuIdx[1]
 
-         # doing col wise update of the numerator
-         for i in 1:size(sumNumerator, 2)
-             @inbounds @views begin
-                 sumNumerator[:,i] .+= dist .* sample[i]
-             end
+		 @inbounds @views begin
+		 	sumNumerator[target, :] .+= x[s, :]
+	 	 end
+		 sumDenominator[target] += 1
 
-         end
-         sumDenominator += dist
      end
 
      return sumNumerator, sumDenominator
@@ -241,10 +233,10 @@ function getRadius(initRadius::Float64, iteration::Int64, decay::String, epochs:
 	if decay == "linear"
 		# timeConstant is delta R in previous code
 		timeConstant = (initRadius - 1.0) / epochs
-		return initRadius - (iteration * timeConstant)
+		return initRadius - (iteration * timeConstan)
 	elseif decay == "exp"
 		timeConstant = epochs / log(initRadius)
-		return initRadius * exp(-iteration / timeConstant)
+		return initRadius * exp(-iteration / timeConstan)
 	end
 
 end
