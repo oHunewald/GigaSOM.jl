@@ -3,11 +3,12 @@
 # Random.seed!(1)
 
 if nprocs() <= 2
-    p = addprocs(4, topology=:master_worker)
+    p = addprocs(2, topology=:master_worker)
 end
 @everywhere using DistributedArrays
 @everywhere using GigaSOM
 @everywhere using Distances
+@everywhere using NearestNeighbors
 
 # only use lineageMarkers for clustering
 cc = map(Symbol, lineageMarkers)
