@@ -69,7 +69,7 @@ to the signature fun(x, r) where x is an arbitrary distance and r is a parameter
 controlling the function and the return value is between 0.0 and 1.0.
 """
 function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussianKernel,
-						rStart = 0.0, rFinal=0.1, epochs=10)
+						rStart = 0.0, rFinal=0.1, decay="linear", epochs=10)
 
     train = convertTrainingData(train)
 
@@ -119,12 +119,11 @@ function trainGigaSOM(som::Som, train::DataFrame; kernelFun::Function = gaussian
 			globalSumDenominator += sumDenominator
 		end
 
-		r = getRadius(rStart, j, "exp", epochs)
-		println("Radius: $r")
+		rEpoch = getRadius(rStart, rFinal, j-1, decay, epochs)
+		println("Epoch: $j (radius: $rEpoch)")
 
-		wEpoch = kernelFun(dm, r)
-
-		codes = (wEpoch * globalSumNumerator) ./ (wEpoch * globalSumDenominator)
+		wEpoch = kernelFun(dm, rEpoch)
+		codes = (wEpoch*globalSumNumerator) ./ (wEpoch*globalSumDenominator)
     end
 
     som.codes[:,:] = codes[:,:]
@@ -228,15 +227,16 @@ Return a new neighbourhood radius
 Data must have the same number of dimensions as the training dataset
 and will be normalised with the same parameters.
 """
-function getRadius(initRadius::Float64, iteration::Int64, decay::String, epochs::Int64)
+function getRadius(initRadius::Float64, finalRadius::Float64, iteration::Int64,
+				decay::String, epochs::Int64)
 
 	if decay == "linear"
 		# timeConstant is delta R in previous code
-		timeConstant = (initRadius - 1.0) / epochs
-		return initRadius - (iteration * timeConstan)
+		timeConstant = (initRadius - finalRadius) / (epochs-1)
+		return initRadius - (iteration * timeConstant)
 	elseif decay == "exp"
 		timeConstant = epochs / log(initRadius)
-		return initRadius * exp(-iteration / timeConstan)
+		return initRadius * exp(-iteration / timeConstant)
 	end
 
 end
