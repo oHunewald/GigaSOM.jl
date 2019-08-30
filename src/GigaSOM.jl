@@ -16,7 +16,6 @@ module GigaSOM
     using DistributedArrays
     using XLSX
     using NearestNeighbors
-    # using PyCall
 
     include("structs.jl")
     include("core.jl")
