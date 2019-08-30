@@ -133,9 +133,11 @@ in x (row-wise).
 function visual(codes::Array{Float64,2}, x::Array{Float64,2})
 
     vis = zeros(Int, size(x,1))
+    nnTree = BruteTree(Array{Float64,2}(codes'))
     for i in 1:size(x,1)
 
-        vis[i] = findBmu(codes, x[i, : ])
+        (bmuIdx, bmuDist) = knn(nnTree, x[s, :], 1)
+        vis[i] = bmuIdx[1]
     end
 
     return vis
