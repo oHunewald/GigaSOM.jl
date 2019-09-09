@@ -7,7 +7,7 @@ cwd = pwd()
 # datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
 datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3neg"
 cd(datapath)
-md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
+md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 # md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
@@ -44,7 +44,7 @@ cc = map(Symbol, lineageMarkers)
 dfSom = daf.fcstable[:,cc]
 
 som2 = initGigaSOM(dfSom, 10, 10)
-som2 = trainGigaSOM(som2, dfSom, epochs = 2, rStart = 6.0)
+som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
 
@@ -65,7 +65,7 @@ plot_outdir = "consensus_plots"
 nmc = 50
 codesT = Matrix(codes')
 mc = ConsensusClusterPlus_2(codesT, maxK = nmc, reps = 100,
-                           pItem = 0.9, pFeature = 1, 
+                           pItem = 0.9, pFeature = 1,
                            clusterAlg = "hc", innerLinkage = "average", finalLinkage = "average",
                            distance = "euclidean", seed = 1234)
 
