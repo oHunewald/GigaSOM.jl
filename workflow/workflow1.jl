@@ -24,10 +24,34 @@ using StatsPlots
 using Statistics
 using StatsBase
 using MultivariateStats
-include("../src/visualization/Plotting.jl")
+# include("../src/visualization/Plotting.jl")
+#
+# # some plotting
+# plotPCA(daf,md)
 
-# some plotting
-plotPCA(daf,md)
+#################################################################
+# Export the data for PCA
+#################################################################
+dfall_median = aggregate(daf.fcstable, :sample_id, Statistics.median)
+
+T = convert(Matrix, dfall_median)
+samples_ids = T[:,1]
+T_reshaped = permutedims(convert(Matrix{Float64}, T[:, 2:10]), [2, 1])
+
+my_pca = StatsBase.fit(MultivariateStats.PCA, T_reshaped)
+
+yte = MultivariateStats.transform(my_pca,T_reshaped)
+
+df_pca = DataFrame(yte')
+df_pca[:sample_id] = samples_ids
+
+# get the condition per sample id and add in DF
+v1= df_pca.sample_id; v2=md.sample_id
+idxs = indexin(v1, v2)
+df_pca[:condition] = md.condition[idxs]
+
+CSV.write("pca_df.csv", df_pca)
+
 #fix the seed
 Random.seed!(1)
 
