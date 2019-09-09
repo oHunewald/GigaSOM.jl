@@ -20,14 +20,14 @@ cleanNames!(fcsRaw)
 daf = createDaFrame(fcsRaw, md, panel)
 
 cd(cwd)
-# using StatsPlots
-# using Statistics
-# using StatsBase
-# using MultivariateStats
-# include("../src/visualization/Plotting.jl")
-#
-# # some plotting
-# plotPCA(daf,md)
+using StatsPlots
+using Statistics
+using StatsBase
+using MultivariateStats
+include("../src/visualization/Plotting.jl")
+
+# some plotting
+plotPCA(daf,md)
 #fix the seed
 Random.seed!(1)
 
