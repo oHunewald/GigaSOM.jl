@@ -51,5 +51,9 @@ function plotPCA(daf, md)
     idxs = indexin(v1, v2)
     df_pca[:condition] = md.condition[idxs]
 
-    StatsPlots.@df df_pca scatter(:x1, :x2, group=:condition)
+    # StatsPlots.@df df_pca scatter(:x1, :x2, group=:condition)
+    gr() # We will continue onward using the GR backend
+    p = plot(df_pca.x1,df_pca.x2,seriestype=:scatter,title="My Scatter Plot",
+    group=df_pca.condition)
+    savefig(p,"myplot.pdf")
 end
