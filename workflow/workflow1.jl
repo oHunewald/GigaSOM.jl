@@ -4,11 +4,11 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
-# datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3neg"
+# datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
+datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3neg"
 cd(datapath)
-# md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
-md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
+md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
+# md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
 lineageMarkers, functionalMarkers = getMarkers(panel)
@@ -34,9 +34,12 @@ using MultivariateStats
 #################################################################
 dfall_median = aggregate(daf.fcstable, :sample_id, Statistics.median)
 
+# get the timepoints for each sample_id
+md.timepoint
+
 T = convert(Matrix, dfall_median)
 samples_ids = T[:,1]
-T_reshaped = permutedims(convert(Matrix{Float64}, T[:, 2:10]), [2, 1])
+T_reshaped = permutedims(convert(Matrix{Float64}, T[:, 2:end]), [2, 1])
 
 my_pca = StatsBase.fit(MultivariateStats.PCA, T_reshaped)
 
@@ -49,6 +52,7 @@ df_pca[:sample_id] = samples_ids
 v1= df_pca.sample_id; v2=md.sample_id
 idxs = indexin(v1, v2)
 df_pca[:condition] = md.condition[idxs]
+df_pca[:timepoint] = md.timepoint[idxs]
 
 CSV.write("pca_df.csv", df_pca)
 
