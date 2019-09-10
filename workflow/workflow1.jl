@@ -5,7 +5,7 @@ checkDir()
 cwd = pwd()
 
 # datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
-datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3neg"
+datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3pos"
 cd(datapath)
 md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 # md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
@@ -78,6 +78,7 @@ winners = mapToGigaSOM(som2, dfSom)
 
 embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 
+CSV.write("embed.csv", DataFrame(embed))
 
 rmprocs(workers())
 
