@@ -4,11 +4,11 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-# datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
-datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3neg"
+datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
+# datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3neg"
 cd(datapath)
-md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 # md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
+md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
 lineageMarkers, functionalMarkers = getMarkers(panel)
