@@ -4,7 +4,7 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-# datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3neg"
+# datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3pos"
 datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3pos"
 cd(datapath)
 md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
@@ -20,7 +20,7 @@ cleanNames!(fcsRaw)
 daf = createDaFrame(fcsRaw, md, panel)
 
 cd(cwd)
-using StatsPlots
+# using StatsPlots
 using Statistics
 using StatsBase
 using MultivariateStats
@@ -75,7 +75,7 @@ som2 = initGigaSOM(dfSom, 10, 10)
 som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
-
+CSV.write("winners.csv", winners)
 embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 
 CSV.write("embed.csv", DataFrame(embed))
@@ -97,8 +97,6 @@ mc = ConsensusClusterPlus_2(codesT, maxK = nmc, reps = 100,
                            pItem = 0.9, pFeature = 1,
                            clusterAlg = "hc", innerLinkage = "average", finalLinkage = "average",
                            distance = "euclidean", seed = 1234)
-
-
 
 cell_clustering = mc[winners.index]
 
