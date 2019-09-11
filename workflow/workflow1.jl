@@ -71,14 +71,14 @@ p = addprocs(2)
 cc = map(Symbol, lineageMarkers)
 dfSom = daf.fcstable[:,cc]
 
-som2 = initGigaSOM(dfSom, 10, 10)
+som2 = initGigaSOM(dfSom, 20, 20)
 som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
-CSV.write("winners.csv", winners)
+CSV.write("winners20_20.csv", winners)
 embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 
-CSV.write("embed.csv", DataFrame(embed))
+CSV.write("embed_20_20.csv", DataFrame(embed))
 
 rmprocs(workers())
 
@@ -124,9 +124,9 @@ names!(expr_med_norm, c_names)
 # put back the column cell clustering
 expr_med_norm[:cell_clustering] = cc_aggregated
 
-CSV.write("expr_median.csv", expr_median)
-CSV.write("expr_median_norm.csv", expr_med_norm)
+CSV.write("expr_median_20_20.csv", expr_median)
+CSV.write("expr_median_norm_20_20.csv", expr_med_norm)
 # sampleId = daf.fcstable[ : , :sample_id]
 
 cc_tbl = DataFrame(id = cell_clustering)
-CSV.write("cell_clustering.csv", cc_tbl)
+CSV.write("cell_clustering_20_20.csv", cc_tbl)
