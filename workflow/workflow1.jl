@@ -91,7 +91,7 @@ using RCall
 @rlibrary consens2
 
 plot_outdir = "consensus_plots"
-nmc = 50
+nmc = 100
 codesT = Matrix(codes')
 mc = ConsensusClusterPlus_2(codesT, maxK = nmc, reps = 100,
                            pItem = 0.9, pFeature = 1,
@@ -124,9 +124,9 @@ names!(expr_med_norm, c_names)
 # put back the column cell clustering
 expr_med_norm[:cell_clustering] = cc_aggregated
 
-CSV.write("expr_median_20_20.csv", expr_median)
-CSV.write("expr_median_norm_20_20.csv", expr_med_norm)
+CSV.write("expr_median_20_20_cc100.csv", expr_median)
+CSV.write("expr_median_norm_20_20_cc100.csv", expr_med_norm)
 # sampleId = daf.fcstable[ : , :sample_id]
 
 cc_tbl = DataFrame(id = cell_clustering)
-CSV.write("cell_clustering_20_20.csv", cc_tbl)
+CSV.write("cell_clustering_20_20_cc100.csv", cc_tbl)
