@@ -96,37 +96,42 @@ function trainGigaSOM(som::Som, train::DataFrame;
         globalSumNumerator = zeros(Float64, size(codes))
         globalSumDenominator = zeros(Float64, size(codes)[1])
 
-        tree = knnTreeFun(Array{Float64,2}(transpose(codes)))
-
         if nWorkers > 1
             # distribution across workers
             R = Array{Future}(undef,nWorkers, 1)
-             @sync for (p, pid) in enumerate(workers())
-                 @async R[p] = @spawnat pid begin
-                     doEpoch(localpart(dTrain), codes, tree)
-                 end
-             end
+            for (p, pid) in enumerate(workers())
+                R[p] = @spawnat pid begin
+                    tree = knnTreeFun(Array{Float64,2}(transpose(codes)))
+                    doEpoch(localpart(dTrain), codes, tree)
+                end
+            end
 
-             @sync for (p, pid) in enumerate(workers())
-                 tmp = fetch(R[p])
-                 globalSumNumerator += tmp[1]
-                 globalSumDenominator += tmp[2]
-             end
+            for (p, pid) in enumerate(workers())
+                println("fetch...")
+                @time tmp = fetch(R[p])
+                println("sum...")
+                @time globalSumNumerator += tmp[1]
+                @time globalSumDenominator += tmp[2]
+            end
         else
-            # only batch mode
+            # simple batch mode
+            tree = knnTreeFun(Array{Float64,2}(transpose(codes)))
             sumNumerator, sumDenominator = doEpoch(localpart(dTrain), codes, tree)
             globalSumNumerator += sumNumerator
             globalSumDenominator += sumDenominator
         end
 
-        r = radiusFun(rStart, rFinal, j, epochs)
+        println("radiusFun")
+        @time r = radiusFun(rStart, rFinal, j, epochs)
         println("Radius: $r")
         if r <= 0
             error("Sanity check: radius must be positive")
         end
 
-        wEpoch = kernelFun(dm, r)
-        codes = (wEpoch*globalSumNumerator) ./ (wEpoch*globalSumDenominator)
+        println("kernelFun")
+        @time wEpoch = kernelFun(dm, r)
+        println("codeUpdate")
+        @time codes = (wEpoch*globalSumNumerator) ./ (wEpoch*globalSumDenominator)
     end
 
     som.codes[:,:] = codes[:,:]
@@ -147,22 +152,19 @@ vectors and the adjustment in radius after each epoch.
 """
 function doEpoch(x::Array{Float64, 2}, codes::Array{Float64, 2}, tree)
 
-     # initialise numerator and denominator with 0's
-     sumNumerator = zeros(Float64, size(codes))
-     sumDenominator = zeros(Float64, size(codes)[1])
+    # initialise numerator and denominator with 0's
+    sumNumerator = zeros(Float64, size(codes))
+    sumDenominator = zeros(Float64, size(codes, 1))
 
-     # for each sample in dataset / trainingsset
-     for s in 1:size(x, 1)
+    (targets, ) = knn(tree, x', 1)
 
-         (bmuIdx, bmuDist) = knn(tree, x[s, :], 1)
+    for i in 1:size(targets,1)
+        t = targets[i][1]
+        sumNumerator[t, :] .+= x[i, :]
+        sumDenominator[t] += 1
+    end
 
-         target = bmuIdx[1]
-
-         sumNumerator[target, :] .+= x[s, :]
-         sumDenominator[target] += 1
-     end
-
-     return sumNumerator, sumDenominator
+    return sumNumerator, sumDenominator
 end
 
 
