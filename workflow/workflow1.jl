@@ -4,12 +4,13 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-# datapath = "/Users/ohunewald/work/data_felD1"
+datapath = "/Users/ohunewald/work/data_felD1"
 # datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3pos"
 # datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3pos"
-datapath = "/home/users/ohunewald/data"
+# datapath = "/home/users/ohunewald/data"
 cd(datapath)
-md = DataFrame(XLSX.readtable("metadata_100.xlsx", "Sheet1", infer_eltypes=true)...)
+# md = DataFrame(XLSX.readtable("metadata_100.xlsx", "Sheet1", infer_eltypes=true)...)
+md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 # md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
@@ -57,7 +58,7 @@ using MultivariateStats
 #fix the seed
 Random.seed!(1)
 
-p = addprocs(10)
+p = addprocs(2)
 
 # @everywhere using DistributedArrays
 @everywhere using GigaSOM
