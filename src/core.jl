@@ -101,13 +101,17 @@ function trainGigaSOM(som::Som, train::DataFrame;
 
             @sync begin
                 for (idx, pid) in enumerate(workers())
-                    @async R[idx] =  fetch(@spawnat pid begin doEpoch(localpart(dTrain), codes, tree) end)
+                    @async begin
+                        R[idx] =  fetch(@spawnat pid begin doEpoch(localpart(dTrain), codes, tree) end)
+                        globalSumNumerator += R[idx][1]
+                        globalSumDenominator += R[idx][2]
+                    end
                 end
             end
-            for (idx, pid) in enumerate(workers())
-                globalSumNumerator += R[idx][1]
-                globalSumDenominator += R[idx][2]
-            end
+            # for (idx, pid) in enumerate(workers())
+            #     globalSumNumerator += R[idx][1]
+            #     globalSumDenominator += R[idx][2]
+            # end
 
         else
             # only batch mode
