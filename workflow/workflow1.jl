@@ -4,10 +4,10 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-datapath = "/Users/ohunewald/work/data_felD1"
+# datapath = "/Users/ohunewald/work/data_felD1"
 # datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3pos"
 # datapath = "/home/users/ohunewald/systact/pre_data/SYSTACT_555_CD3pos"
-# datapath = "/home/users/ohunewald/data"
+datapath = "/home/users/ohunewald/data"
 cd(datapath)
 # md = DataFrame(XLSX.readtable("metadata_100.xlsx", "Sheet1", infer_eltypes=true)...)
 md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
@@ -71,9 +71,11 @@ cc = map(Symbol, lineageMarkers)
 dfSom = daf.fcstable[:,cc]
 
 som2 = initGigaSOM(dfSom, 10, 10)
+
 @time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
+
 CSV.write("winners_100.csv", winners)
 @time embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 

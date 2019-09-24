@@ -35,7 +35,7 @@ module GigaSOM
         mapToGigaSOM,
         linearRadius,
         expRadius
-    
+
     export #embedding
         embedGigaSOM
 

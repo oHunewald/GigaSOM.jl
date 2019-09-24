@@ -85,10 +85,7 @@ function trainGigaSOM(som::Som, train::DataFrame;
     end
 
     dm = distMatrix(som.grid, som.toroidal)
-
     codes = som.codes
-
-    nWorkers = nprocs()
     dTrain = distribute(train)
 
     for j in 1:epochs
@@ -98,20 +95,20 @@ function trainGigaSOM(som::Som, train::DataFrame;
 
         tree = knnTreeFun(Array{Float64,2}(transpose(codes)))
 
-        if nWorkers > 1
-            # distribution across workers
-            R = Array{Future}(undef,nWorkers, 1)
-             @sync for (p, pid) in enumerate(workers())
-                 @async R[p] = @spawnat pid begin
-                     doEpoch(localpart(dTrain), codes, tree)
-                 end
-             end
+        if nworkers() > 1
 
-             @sync for (p, pid) in enumerate(workers())
-                 tmp = fetch(R[p])
-                 globalSumNumerator += tmp[1]
-                 globalSumDenominator += tmp[2]
-             end
+            R = Vector{Any}(undef,nworkers())
+
+            @sync begin
+                for (idx, pid) in enumerate(workers())
+                    @async R[idx] =  fetch(@spawnat pid begin doEpoch(localpart(dTrain), codes, tree) end)
+                end
+            end
+            for (idx, pid) in enumerate(workers())
+                globalSumNumerator += R[idx][1]
+                globalSumDenominator += R[idx][2]
+            end
+
         else
             # only batch mode
             sumNumerator, sumDenominator = doEpoch(localpart(dTrain), codes, tree)
