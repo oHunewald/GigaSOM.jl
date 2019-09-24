@@ -72,6 +72,7 @@ dfSom = daf.fcstable[:,cc]
 
 som2 = initGigaSOM(dfSom, 10, 10)
 
+som2 = trainGigaSOM(som2, dfSom, epochs = 1)
 @time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
