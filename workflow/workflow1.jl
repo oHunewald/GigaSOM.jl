@@ -58,7 +58,7 @@ using MultivariateStats
 #fix the seed
 Random.seed!(1)
 
-p = addprocs(2)
+p = addprocs(4)
 
 # @everywhere using DistributedArrays
 @everywhere using GigaSOM
@@ -72,15 +72,15 @@ dfSom = daf.fcstable[:,cc]
 
 som2 = initGigaSOM(dfSom, 10, 10)
 
-som2 = trainGigaSOM(som2, dfSom, epochs = 1)
+# som2 = trainGigaSOM(som2, dfSom, epochs = 1)
 @time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 winners = mapToGigaSOM(som2, dfSom)
 
-CSV.write("winners_100.csv", winners)
+CSV.write("winners.csv", winners)
 @time embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 
-CSV.write("embed_100.csv", DataFrame(embed))
+CSV.write("embed.csv", DataFrame(embed))
 
 rmprocs(workers())
 
