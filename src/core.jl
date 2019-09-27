@@ -86,7 +86,9 @@ function trainGigaSOM(som::Som, train;
 
     dm = distMatrix(som.grid, som.toroidal)
     codes = som.codes
-    dTrain = distribute(train)
+
+    sharedTrain = SharedArray(train)
+    (irange, jrange) = (1:size(sharedTrain,1), 1:size(sharedTrain,2))
 
     for j in 1:epochs
 
@@ -102,16 +104,13 @@ function trainGigaSOM(som::Som, train;
             @sync begin
                 for (idx, pid) in enumerate(workers())
                     @async begin
-                        R[idx] =  fetch(@spawnat pid begin doEpoch(localpart(dTrain), codes, tree) end)
+                        R[idx] =  fetch(@spawnat pid begin doEpoch(sharedTrain, myrange(sharedTrain)...,
+                                                                1:size(sharedTrain,1), codes, tree) end)
                         globalSumNumerator += R[idx][1]
                         globalSumDenominator += R[idx][2]
                     end
                 end
             end
-            # for (idx, pid) in enumerate(workers())
-            #     globalSumNumerator += R[idx][1]
-            #     globalSumDenominator += R[idx][2]
-            # end
 
         else
             # only batch mode
