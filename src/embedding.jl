@@ -33,7 +33,7 @@ draw(PNG("output.png",20cm,20cm),
 Data must have the same number of dimensions as the training dataset
 and will be normalised with the same parameters.
 """
-function embedGigaSOM(som::GigaSOM.Som, data::DataFrame;
+function embedGigaSOM(som::GigaSOM.Som, data;
                       knnTreeFun = BruteTree,
                       k::Int64=0, adjust::Float64=1.0, smooth::Float64=0.0)
 
