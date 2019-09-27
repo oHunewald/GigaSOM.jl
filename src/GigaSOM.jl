@@ -13,7 +13,7 @@ module GigaSOM
     using Distributed
     using Distributions
     using FileIO
-    using DistributedArrays
+    using SharedArrays
     using XLSX
     using NearestNeighbors
 
