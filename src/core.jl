@@ -69,7 +69,7 @@ can be provided to modify the distance-dependent training. The function must fit
 to the signature fun(x, r) where x is an arbitrary distance and r is a parameter
 controlling the function and the return value is between 0.0 and 1.0.
 """
-function trainGigaSOM(som::Som, train::DataFrame;
+function trainGigaSOM(som::Som, train;
                       kernelFun::Function = gaussianKernel,
                       knnTreeFun = BruteTree,
                       rStart = 0.0, rFinal=0.1, radiusFun=linearRadius,
