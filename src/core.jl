@@ -145,14 +145,14 @@ vectors and the adjustment in radius after each epoch.
 - `codes`: Codebook
 - `tree`: knn-compatible tree built upon the codes
 """
-function doEpoch(x::Array{Float64, 2}, codes::Array{Float64, 2}, tree)
+function doEpoch(x::SharedArray{Float64, 2}, u, irange, jrange, codes::Array{Float64, 2}, tree)
 
      # initialise numerator and denominator with 0's
      sumNumerator = zeros(Float64, size(codes))
      sumDenominator = zeros(Float64, size(codes)[1])
 
      # for each sample in dataset / trainingsset
-     for s in 1:size(x, 1)
+     for s in 1:irange
 
          (bmuIdx, bmuDist) = knn(tree, x[s, :], 1)
 
