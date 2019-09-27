@@ -152,7 +152,7 @@ function doEpoch(x::SharedArray{Float64, 2}, u, irange, jrange, codes::Array{Flo
      sumDenominator = zeros(Float64, size(codes)[1])
 
      # for each sample in dataset / trainingsset
-     for s in 1:irange
+     for s in irange
 
          (bmuIdx, bmuDist) = knn(tree, x[s, :], 1)
 
