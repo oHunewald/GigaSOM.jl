@@ -6,7 +6,8 @@
 # the resources requested above must be within the allocation
 
 # we need to load the julia module so that the paths are set up right.
-module load julia
+module load swenv/default-env/devel
+module load lang/Julia/1.1.1
 
 # this starts the julia script which will srun its own processes
 julia test_cm.jl
