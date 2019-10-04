@@ -88,7 +88,6 @@ function trainGigaSOM(som::Som, train;
     codes = som.codes
 
     sharedTrain = SharedArray(train)
-    (irange, jrange) = (1:size(sharedTrain,1), 1:size(sharedTrain,2))
 
     for j in 1:epochs
 
@@ -104,8 +103,7 @@ function trainGigaSOM(som::Som, train;
             @sync begin
                 for (idx, pid) in enumerate(workers())
                     @async begin
-                        R[idx] =  fetch(@spawnat pid begin @time doEpoch(sharedTrain, myrange(sharedTrain)...,
-                                                                1:size(sharedTrain,1), codes, tree) end)
+                        R[idx] =  fetch(@spawnat pid begin doEpoch(sharedTrain, codes, tree) end)
                         globalSumNumerator += R[idx][1]
                         globalSumDenominator += R[idx][2]
                     end
@@ -145,11 +143,14 @@ vectors and the adjustment in radius after each epoch.
 - `codes`: Codebook
 - `tree`: knn-compatible tree built upon the codes
 """
-function doEpoch(x::SharedArray{Float64, 2}, u, irange, jrange, codes::Array{Float64, 2}, tree)
+function doEpoch(x::SharedArray{Float64, 2}, codes::Array{Float64, 2}, tree)
 
      # initialise numerator and denominator with 0's
      sumNumerator = zeros(Float64, size(codes))
      sumDenominator = zeros(Float64, size(codes)[1])
+
+     @time irange = myrange(x)
+     println(irange)
 
      # for each sample in dataset / trainingsset
      for s in irange

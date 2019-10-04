@@ -44,7 +44,7 @@ function myrange(q::SharedArray)
            end
            nchunks = length(procs(q))
            splits = [round(Int, s) for s in range(0, stop=size(q,1), length=nchunks+1)]
-           1:size(q,1), splits[idx]+1:splits[idx+1]
+           splits[idx]+1:splits[idx+1]
 end
 
 
