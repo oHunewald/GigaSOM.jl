@@ -103,7 +103,7 @@ function trainGigaSOM(som::Som, train;
             @sync begin
                 for (idx, pid) in enumerate(workers())
                     @async begin
-                        R[idx] =  fetch(@spawnat pid begin doEpoch(sharedTrain, codes, tree) end)
+                        R[idx] =  fetch(@spawnat pid begin @time doEpoch(sharedTrain, codes, tree) end)
                         globalSumNumerator += R[idx][1]
                         globalSumDenominator += R[idx][2]
                     end
@@ -149,8 +149,7 @@ function doEpoch(x::SharedArray{Float64, 2}, codes::Array{Float64, 2}, tree)
      sumNumerator = zeros(Float64, size(codes))
      sumDenominator = zeros(Float64, size(codes)[1])
 
-     @time irange = myrange(x)
-     println(irange)
+     irange = myrange(x)
 
      # for each sample in dataset / trainingsset
      for s in irange
