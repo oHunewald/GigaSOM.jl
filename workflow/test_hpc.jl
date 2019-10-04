@@ -1,28 +1,42 @@
 using GigaSOM, DataFrames, Random, Distributed
 
-Random.seed!(1)
-
-# ! set the number of workers here:
-p = addprocs(2)
-
+p = addprocs(10, topology=:master_worker)
 @everywhere using GigaSOM
 
-# ! set the size of the Matrix here:
-# only change the the first dimension
-dfSom = rand(10_000_000, 40)
+dfSom = rand(50_000_000, 35)
 
 som2 = initGigaSOM(dfSom, 10, 10)
 
 # precompile
 trainGigaSOM(som2, dfSom, epochs = 1)
-
 println("Timing trainGigaSOM: ")
 @time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
+rmprocs(workers())
 
+
+p = addprocs(20, topology=:master_worker)
+@everywhere using GigaSOM
+som2 = initGigaSOM(dfSom, 10, 10)
 # precompile
-embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
+trainGigaSOM(som2, dfSom, epochs = 1)
+println("Timing trainGigaSOM: ")
+@time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
+rmprocs(workers())
 
-println("Timing embedGigaSOM: ")
-@time embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
+p = addprocs(40, topology=:master_worker)
+@everywhere using GigaSOM
+som2 = initGigaSOM(dfSom, 10, 10)
+# precompile
+trainGigaSOM(som2, dfSom, epochs = 1)
+println("Timing trainGigaSOM: ")
+@time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
+rmprocs(workers())
 
+p = addprocs(80, topology=:master_worker)
+@everywhere using GigaSOM
+som2 = initGigaSOM(dfSom, 10, 10)
+# precompile
+trainGigaSOM(som2, dfSom, epochs = 1)
+println("Timing trainGigaSOM: ")
+@time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 rmprocs(workers())
