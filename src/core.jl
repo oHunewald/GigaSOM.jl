@@ -81,7 +81,7 @@ function trainGigaSOM(som::Som, train;
 
     if rStart == 0.0
         rStart = √(som.xdim^2 + som.ydim^2) / 2
-        @info "The radius has been determined automatically."
+        # @info "The radius has been determined automatically."
     end
 
     dm = distMatrix(som.grid, som.toroidal)
@@ -118,7 +118,7 @@ function trainGigaSOM(som::Som, train;
         end
 
         r = radiusFun(rStart, rFinal, j, epochs)
-        println("Radius: $r")
+        # println("Radius: $r")
         if r <= 0
             error("Sanity check: radius must be positive")
         end
