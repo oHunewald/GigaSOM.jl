@@ -30,6 +30,12 @@ end
 
 """
     myrange(q::SharedArray)
+
+Returns the access range for each worker.
+
+# Arguments
+- `q`: SharedArray
+- `ydim`: number of neurons in y-direction
 """
 function myrange(q::SharedArray)
            idx = indexpids(q)
