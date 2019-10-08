@@ -86,7 +86,7 @@ function trainGigaSOM(som::Som, train;
 
     dm = distMatrix(som.grid, som.toroidal)
     codes = som.codes
-    dTrain = distribute(train)
+    @time dTrain = distribute(train)
 
     for j in 1:epochs
 

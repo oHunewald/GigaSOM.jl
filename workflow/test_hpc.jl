@@ -9,7 +9,7 @@ p = addprocs(2)
 
 # ! set the size of the Matrix here:
 # only change the the first dimension
-dfSom = rand(10_000_000, 40)
+dfSom = rand(5_000_000, 40)
 
 som2 = initGigaSOM(dfSom, 10, 10)
 
@@ -20,9 +20,9 @@ println("Timing trainGigaSOM: ")
 @time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
 
 # precompile
-embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
-
-println("Timing embedGigaSOM: ")
-@time embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
+# embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
+#
+# println("Timing embedGigaSOM: ")
+# @time embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 
 rmprocs(workers())
