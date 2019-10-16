@@ -89,9 +89,28 @@ function createDaFrame(fcsRaw, md, panel)
     end
 
     dfall = []
+    colnames = []
+    # TODO: find a better solution for the :None removal
     for (k,v) in fcsRaw
+        if :None in names(v)
+            delete!(v, :None)
+        end
+        if :None_1 in names(v)
+            delete!(v, :None_1)
+        end
+        if :None_2 in names(v)
+            delete!(v, :None_2)
+        end
         push!(dfall,v)
+        # collect the column names of each file for order check
+        push!(colnames, names(v))
     end
+
+    # check if all the column names are in the same order
+    if all(y->y==colnames[1], colnames) == false
+        throw(UndefVarError(:TheColumnOrderIsNotEqual))
+    end
+
     dfall = vcat(dfall...)
     cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
     # markers can be lineage and functional at tthe same time
