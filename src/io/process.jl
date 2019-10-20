@@ -99,11 +99,12 @@ function createDaFrame(fcsRaw, md, panel)
             delete!(df, :None_2)
         end
 
-        insertcols!(df, 1, sample_id = string(md.sample_id[i]))
         # sort columns because the order is not garantiert
         n = names(df)
         sort!(n)
         permutecols!(df, n)
+
+        insertcols!(df, 1, sample_id = string(md.sample_id[i]))
 
         push!(dfall,df)
         # collect the column names of each file for order check
