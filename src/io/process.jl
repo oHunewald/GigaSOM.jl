@@ -115,11 +115,11 @@ function createDaFrame(fcsRaw, md, panel)
     end
 
     # check if all the column names are in the same order
-    if all(y->y==colnames[1], colnames) == false
-        errorDF = DataFrame(colnames)
-        CSV.write("ColnamesError.csv", errorDF)
-        throw(UndefVarError(:TheColumnOrderIsNotEqual))
-    end
+    # if all(y->y==colnames[1], colnames) == false
+    #     errorDF = DataFrame(colnames)
+    #     CSV.write("ColnamesError.csv", errorDF)
+    #     throw(UndefVarError(:TheColumnOrderIsNotEqual))
+    # end
 
     dfall = vcat(dfall...)
     cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
