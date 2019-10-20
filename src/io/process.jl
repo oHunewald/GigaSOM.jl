@@ -98,6 +98,9 @@ function createDaFrame(fcsRaw, md, panel)
         if :None_2 in names(df)
             delete!(df, :None_2)
         end
+        if :None_3 in names(df)
+            delete!(df, :None_3)
+        end
 
         # sort columns because the order is not garantiert
         n = names(df)
