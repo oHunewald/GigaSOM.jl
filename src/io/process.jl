@@ -80,6 +80,8 @@ function createDaFrame(fcsRaw, md, panel)
 
     # extract lineage markers
     lineageMarkers, functionalMarkers = getMarkers(panel)
+    mm = vcat(lineageMarkers, functionalMarkers)
+    mm = unique(mm)
 
     transformData(fcsRaw)
 
@@ -88,19 +90,21 @@ function createDaFrame(fcsRaw, md, panel)
     for i in eachindex(md.file_name)
         df = fcsRaw[md.file_name[i]]
 
+        df = df[:, mm]
+
         # remove the None columns
-        if :None in names(df)
-            delete!(df, :None)
-        end
-        if :None_1 in names(df)
-            delete!(df, :None_1)
-        end
-        if :None_2 in names(df)
-            delete!(df, :None_2)
-        end
-        if :SampleID in names(df)
-            delete!(df, :SampleID)
-        end
+        # if :None in names(df)
+        #     delete!(df, :None)
+        # end
+        # if :None_1 in names(df)
+        #     delete!(df, :None_1)
+        # end
+        # if :None_2 in names(df)
+        #     delete!(df, :None_2)
+        # end
+        # if :SampleID in names(df)
+        #     delete!(df, :SampleID)
+        # end
 
         # sort columns because the order is not garantiert
         n = names(df)
@@ -123,11 +127,11 @@ function createDaFrame(fcsRaw, md, panel)
     end
 
     # # check if all the column names are in the same order
-    # if all(y->y==colnames[1], colnames) == false
-    #     errorDF = DataFrame(colnames)
-    #     CSV.write("ColnamesError.csv", errorDF)
-    #     throw(UndefVarError(:TheColumnOrderIsNotEqual))
-    # end
+    if all(y->y==colnames[1], colnames) == false
+        errorDF = DataFrame(colnames)
+        CSV.write("ColnamesError.csv", errorDF)
+        throw(UndefVarError(:TheColumnOrderIsNotEqual))
+    end
 
     dfall = vcat(dfall...)
     cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
