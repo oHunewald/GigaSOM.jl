@@ -101,28 +101,14 @@ function createDaFrame(fcsRaw, md, panel)
 
         insertcols!(df, 1, sample_id = string(md.sample_id[i]))
         # sort columns because the order is not garantiert
-        sort!(df)
+        n = names(df)
+        sort!(n)
+        permutecols!(df, n)
 
         push!(dfall,df)
         # collect the column names of each file for order check
         push!(colnames, names(df))
     end
-
-
-
-    # TODO: find a better solution for the :None removal
-    # for (k,v) in fcsRaw
-        # if :None in names(v)
-        #     delete!(v, :None)
-        # end
-        # if :None_1 in names(v)
-        #     delete!(v, :None_1)
-        # end
-        # if :None_2 in names(v)
-        #     delete!(v, :None_2)
-        # end
-
-    # end
 
     # check if all the column names are in the same order
     if all(y->y==colnames[1], colnames) == false
