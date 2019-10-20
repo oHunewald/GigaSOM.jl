@@ -82,6 +82,7 @@ function createDaFrame(fcsRaw, md, panel)
     lineageMarkers, functionalMarkers = getMarkers(panel)
     mm = vcat(lineageMarkers, functionalMarkers)
     mm = unique(mm)
+    mm = map(Symbol, mm)
 
     transformData(fcsRaw)
 
