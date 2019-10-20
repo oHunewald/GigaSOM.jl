@@ -13,6 +13,7 @@ datapath = "/home/users/ohunewald/systact/data"
 cd(datapath)
 # md = DataFrame(XLSX.readtable("metadata_100.xlsx", "Sheet1", infer_eltypes=true)...)
 md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
+# md = DataFrame(XLSX.readtable("metadata_test.xlsx", "Sheet1", infer_eltypes=true)...)
 # md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
@@ -72,7 +73,7 @@ CSV.write("pca_df.csv", df_pca)
 #fix the seed
 Random.seed!(1)
 
-p = addprocs(2)
+p = addprocs(80)
 
 # @everywhere using DistributedArrays
 @everywhere using GigaSOM
