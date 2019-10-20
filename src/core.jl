@@ -102,7 +102,7 @@ function trainGigaSOM(som::Som, train;
             @sync begin
                 for (idx, pid) in enumerate(workers())
                     @async begin
-                        R[idx] =  fetch(@spawnat pid begin @time doEpoch(localpart(dTrain), codes, tree) end)
+                        R[idx] =  fetch(@spawnat pid doEpoch(localpart(dTrain), codes, tree))
                         globalSumNumerator += R[idx][1]
                         globalSumDenominator += R[idx][2]
                     end
