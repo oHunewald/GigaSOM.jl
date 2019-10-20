@@ -113,9 +113,8 @@ function createDaFrame(fcsRaw, md, panel)
 
     # check if all the column names are in the same order
     if all(y->y==colnames[1], colnames) == false
-        for n in colnames
-            println(n)
-        end
+        errorDF = DataFrame(colnames)
+        CSV.write("ColnamesError.csv", errorDF)
         throw(UndefVarError(:TheColumnOrderIsNotEqual))
     end
 
