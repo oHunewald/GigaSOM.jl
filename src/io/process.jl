@@ -98,8 +98,8 @@ function createDaFrame(fcsRaw, md, panel)
         if :None_2 in names(df)
             delete!(df, :None_2)
         end
-        if :None_3 in names(df)
-            delete!(df, :None_3)
+        if :SampleID in names(df)
+            delete!(df, :SampleID)
         end
 
         # sort columns because the order is not garantiert
@@ -114,7 +114,15 @@ function createDaFrame(fcsRaw, md, panel)
         push!(colnames, names(df))
     end
 
-    # check if all the column names are in the same order
+    tmp = colnames[1]
+    for c in colnames
+        if c != tmp
+            println(c)
+            println(tmp)
+        end
+    end
+
+    # # check if all the column names are in the same order
     # if all(y->y==colnames[1], colnames) == false
     #     errorDF = DataFrame(colnames)
     #     CSV.write("ColnamesError.csv", errorDF)
