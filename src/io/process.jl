@@ -83,28 +83,46 @@ function createDaFrame(fcsRaw, md, panel)
 
     transformData(fcsRaw)
 
-    for i in eachindex(md.file_name)
-        df = fcsRaw[md.file_name[i]]
-        insertcols!(df, 1, sample_id = string(md.sample_id[i]))
-    end
-
     dfall = []
     colnames = []
-    # TODO: find a better solution for the :None removal
-    for (k,v) in fcsRaw
-        if :None in names(v)
-            delete!(v, :None)
+    for i in eachindex(md.file_name)
+        df = fcsRaw[md.file_name[i]]
+
+        # remove the None columns
+        if :None in names(df)
+            delete!(df, :None)
         end
-        if :None_1 in names(v)
-            delete!(v, :None_1)
+        if :None_1 in names(df)
+            delete!(df, :None_1)
         end
-        if :None_2 in names(v)
-            delete!(v, :None_2)
+        if :None_2 in names(df)
+            delete!(df, :None_2)
         end
-        push!(dfall,v)
+
+        insertcols!(df, 1, sample_id = string(md.sample_id[i]))
+        # sort columns because the order is not garantiert
+        sort!(df)
+
+        push!(dfall,df)
         # collect the column names of each file for order check
-        push!(colnames, names(v))
+        push!(colnames, names(df))
     end
+
+
+
+    # TODO: find a better solution for the :None removal
+    # for (k,v) in fcsRaw
+        # if :None in names(v)
+        #     delete!(v, :None)
+        # end
+        # if :None_1 in names(v)
+        #     delete!(v, :None_1)
+        # end
+        # if :None_2 in names(v)
+        #     delete!(v, :None_2)
+        # end
+
+    # end
 
     # check if all the column names are in the same order
     if all(y->y==colnames[1], colnames) == false
