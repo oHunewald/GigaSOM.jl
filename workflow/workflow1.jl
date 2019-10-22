@@ -67,7 +67,7 @@ df_pca[:sample_id] = samples_ids
 v1= df_pca.sample_id; v2=md.sample_id
 idxs = indexin(v1, v2)
 df_pca[:condition] = md.condition[idxs]
-# df_pca[:timepoint] = md.timepoint[idxs]
+df_pca[:timepoint] = md.timepoint[idxs]
 CSV.write("pca_df.csv", df_pca)
 
 #fix the seed
