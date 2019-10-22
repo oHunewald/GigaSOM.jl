@@ -76,13 +76,21 @@ Read in the fcs raw, add sample id, subset the columns and transform
 - `md`: Metadata table
 - `panel`: Panel table with a column for Lineage Markers and one for Functional Markers
 """
-function createDaFrame(fcsRaw, md, panel)
+function createDaFrame(fcsRaw, md, panel, delCols = [], reduce = true, sort = true)
 
     # extract lineage markers
     lineageMarkers, functionalMarkers = getMarkers(panel)
-    mm = vcat(lineageMarkers, functionalMarkers)
-    mm = unique(mm)
-    mm = map(Symbol, mm)
+
+    cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
+    # markers can be lineage and functional at tthe same time
+    # therefore make cc unique
+    unique!(cc)
+    # push!(cc, :sample_id)
+    # # reduce the dataset to lineage (and later) functional (state) markers
+    # dfall = dfall[:, cc]
+    # mm = vcat(lineageMarkers, functionalMarkers)
+    # mm = unique(mm)
+    # mm = map(Symbol, mm)
 
     transformData(fcsRaw)
 
@@ -91,26 +99,27 @@ function createDaFrame(fcsRaw, md, panel)
     for i in eachindex(md.file_name)
         df = fcsRaw[md.file_name[i]]
 
-        df = df[:, mm]
+        if reduce
+            df = df[:, cc]
+        end
 
         # remove the None columns
-        # if :None in names(df)
-        #     delete!(df, :None)
-        # end
-        # if :None_1 in names(df)
-        #     delete!(df, :None_1)
-        # end
-        # if :None_2 in names(df)
-        #     delete!(df, :None_2)
-        # end
-        # if :SampleID in names(df)
-        #     delete!(df, :SampleID)
-        # end
+        if :None in names(df)
+            delete!(df, :None)
+        end
+        if :None_1 in names(df)
+            delete!(df, :None_1)
+        end
+        if :None_2 in names(df)
+            delete!(df, :None_2)
+        end
 
         # sort columns because the order is not garantiert
-        n = names(df)
-        sort!(n)
-        permutecols!(df, n)
+        if sort
+            n = names(df)
+            sort!(n)
+            permutecols!(df, n)
+        end
 
         insertcols!(df, 1, sample_id = string(md.sample_id[i]))
 
@@ -128,20 +137,11 @@ function createDaFrame(fcsRaw, md, panel)
     end
 
     # # check if all the column names are in the same order
-    if all(y->y==colnames[1], colnames) == false
-        errorDF = DataFrame(colnames)
-        CSV.write("ColnamesError.csv", errorDF)
+    if !(all(y->y==colnames[1], colnames))
         throw(UndefVarError(:TheColumnOrderIsNotEqual))
     end
 
     dfall = vcat(dfall...)
-    cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
-    # markers can be lineage and functional at tthe same time
-    # therefore make cc unique
-    unique!(cc)
-    push!(cc, :sample_id)
-    # reduce the dataset to lineage (and later) functional (state) markers
-    dfall = dfall[:, cc]
     daf = daFrame(dfall, md, panel)
 end
 
