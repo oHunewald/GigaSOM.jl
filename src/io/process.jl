@@ -76,7 +76,7 @@ Read in the fcs raw, add sample id, subset the columns and transform
 - `md`: Metadata table
 - `panel`: Panel table with a column for Lineage Markers and one for Functional Markers
 """
-function createDaFrame(fcsRaw, md, panel, delCols = [], reduce = true, sort = true)
+function createDaFrame(fcsRaw, md, panel; delCols = [], reduce = true, sort = true)
 
     # extract lineage markers
     lineageMarkers, functionalMarkers = getMarkers(panel)
@@ -103,16 +103,17 @@ function createDaFrame(fcsRaw, md, panel, delCols = [], reduce = true, sort = tr
             df = df[:, cc]
         end
 
-        # remove the None columns
-        if :None in names(df)
-            delete!(df, :None)
-        end
-        if :None_1 in names(df)
-            delete!(df, :None_1)
-        end
-        if :None_2 in names(df)
-            delete!(df, :None_2)
-        end
+        # # remove the None columns
+        # if :None in names(df)
+        #     delete!(df, :None)
+        # end
+        # if :None_1 in names(df)
+        #     delete!(df, :None_1)
+        # end
+        # if :None_2 in names(df)
+        #     println(names(df))
+        #     delete!(df, :None_2)
+        # end
 
         # sort columns because the order is not garantiert
         if sort
