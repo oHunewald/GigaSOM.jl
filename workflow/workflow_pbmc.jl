@@ -4,7 +4,8 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-datapath = "/home/users/ohunewald/validation_data/data_pbmc"
+# datapath = "/home/users/ohunewald/validation_data/data_pbmc"
+datapath = "/Users/ohunewald/work/GigaSOM.jl/test/data"
 cd(datapath)
 
 md = DataFrame(XLSX.readtable("PBMC8_metadata.xlsx", "Sheet1", infer_eltypes=true)...)
@@ -74,17 +75,17 @@ p = addprocs(4)
 cc = map(Symbol, lineageMarkers)
 dfSom = daf.fcstable[:,cc]
 sample_id = daf.fcstable[:, :sample_id]
-som2 = initGigaSOM(dfSom, 10, 10)
+som2 = initGigaSOM(dfSom, 20, 20)
 
-@time som2 = trainGigaSOM(som2, dfSom, epochs = 10)
+@time som2 = trainGigaSOM(som2, dfSom, rStart=10.0, epochs = 50)
 
 winners = mapToGigaSOM(som2, dfSom)
 
-CSV.write("winners.csv", winners)
+CSV.write("winners_r10_grid20_epochs50.csv", winners)
 @time embed = embedGigaSOM(som2, dfSom, k=10, smooth=0.0, adjust=0.5)
 embedDf = DataFrame(embed)
 insertcols!(embedDf, 1, sample_id = sample_id)
-CSV.write("embed.csv", embedDf)
+CSV.write("embed_r10_grid20.csv", embedDf)
 
 rmprocs(workers())
 
@@ -105,7 +106,7 @@ using StatsBase
 @rlibrary consens2
 
 plot_outdir = "consensus_plots"
-nmc = 50
+nmc = 20
 codesT = Matrix(codes')
 
 mc = ConsensusClusterPlus_2(codesT, maxK = nmc, reps = 100,
@@ -136,12 +137,12 @@ names!(expr_med_norm, c_names)
 # put back the column cell clustering
 expr_med_norm[:cell_clustering] = cc_aggregated
 
-CSV.write("expr_median_consensus.csv", expr_median)
-CSV.write("expr_median_norm_consensus.csv", expr_med_norm)
+CSV.write("expr_median_r10_grid20_epochs50.csv", expr_median)
+CSV.write("expr_median_norm_r10_grid20_epochs50.csv", expr_med_norm)
 # sampleId = daf.fcstable[ : , :sample_id]
 
 cc_tbl = DataFrame(id = cell_clustering)
-CSV.write("cell_clustering_consensus.csv", cc_tbl)
+CSV.write("cell_clustering_r10_grid20_epochs50.csv", cc_tbl)
 
 
 cd(cwd)
