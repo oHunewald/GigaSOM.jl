@@ -4,17 +4,14 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-# datapath = "/Users/ohunewald/work/data_felD1"
 datapath = "/Users/ohunewald/work/SysTact/test_metadata"
-# datapath = "/Users/ohunewald/work/SysTact/pre_data/SYSTACT_555_CD3pos"
 # datapath = "/home/users/ohunewald/systact/test_metadata"
 # datapath = "/home/users/ohunewald/systact/data"
-# datapath = "/home/users/ohunewald/data"
+
 cd(datapath)
-# md = DataFrame(XLSX.readtable("metadata_100.xlsx", "Sheet1", infer_eltypes=true)...)
+
 # md = DataFrame(XLSX.readtable("metadata.xlsx", "Sheet1", infer_eltypes=true)...)
 md = DataFrame(XLSX.readtable("metadata_test.xlsx", "Sheet1", infer_eltypes=true)...)
-# md = DataFrame(XLSX.readtable("metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
 lineageMarkers, functionalMarkers = getMarkers(panel)
@@ -25,6 +22,9 @@ cleanNames!(fcsRaw)
 daf = createDaFrame(fcsRaw, md, panel)
 
 cd(cwd)
+# write fcs table for later analysis
+CSV.write("all_fcs.csv", daf.fcstable)
+
 # using StatsPlots
 using Statistics
 try
@@ -98,9 +98,7 @@ rmprocs(workers())
 
 # extract the codes for consensus clustering
 codes = som2.codes
-# include("../src/io/cCluster.jl")
-# retrive the cluster ids
-# mc =  cc_plus(codes)
+
 try
 	using RCall
 catch
@@ -115,45 +113,43 @@ using StatsBase
 @rlibrary consens2
 
 plot_outdir = "consensus_plots"
-cclusters = [50, 25]
-# nmc = 50
+nmc = 50
 codesT = Matrix(codes')
-for nmc in cclusters
-	mc = ConsensusClusterPlus_2(codesT, maxK = nmc, reps = 100,
-	                           pItem = 0.9, pFeature = 1,
-	                           clusterAlg = "hc", innerLinkage = "average", finalLinkage = "average",
-	                           distance = "euclidean", seed = 1234)
 
-	cell_clustering = mc[winners.index]
+mc = ConsensusClusterPlus_2(codesT, maxK = nmc, reps = 100,
+							pItem = 0.9, pFeature = 1,
+							clusterAlg = "hc", innerLinkage = "average", finalLinkage = "average",
+							distance = "euclidean", seed = 1234)
 
-	dfSom.cell_clustering = cell_clustering
+cell_clustering = mc[winners.index]
 
-	# median expression values per som node
-	expr_median = aggregate(dfSom, :cell_clustering, median)
-	# expr_median_norm = deepcopy(expr_median)
+dfSom.cell_clustering = cell_clustering
 
-	# apply uniform scaling to all features (columns)
-	# get the cell clustering column
-	cc_aggregated = expr_median.cell_clustering
-	# remove the cell clustering column
-	tmp = expr_median[:, filter(x -> x != :cell_clustering, names(expr_median))]
-	# get the column names
-	c_names = names(tmp)
-	tmp_matrix = Matrix(tmp)
-	dt = fit(UnitRangeTransform, tmp_matrix')
-	expr_med_norm = StatsBase.transform(dt, tmp_matrix')
-	expr_med_norm = DataFrame(expr_med_norm')
-	names!(expr_med_norm, c_names)
-	# put back the column cell clustering
-	expr_med_norm[:cell_clustering] = cc_aggregated
+# median expression values per som node
+expr_median = aggregate(dfSom, :cell_clustering, median)
 
-	CSV.write("expr_median_consensus$nmc.csv", expr_median)
-	CSV.write("expr_median_norm_consensus$nmc.csv", expr_med_norm)
-	# sampleId = daf.fcstable[ : , :sample_id]
+# apply uniform scaling to all features (columns)
+# get the cell clustering column
+cc_aggregated = expr_median.cell_clustering
+# remove the cell clustering column
+tmp = expr_median[:, filter(x -> x != :cell_clustering, names(expr_median))]
+# get the column names
+c_names = names(tmp)
+tmp_matrix = Matrix(tmp)
+dt = fit(UnitRangeTransform, tmp_matrix')
+expr_med_norm = StatsBase.transform(dt, tmp_matrix')
+expr_med_norm = DataFrame(expr_med_norm')
+names!(expr_med_norm, c_names)
+# put back the column cell clustering
+expr_med_norm[:cell_clustering] = cc_aggregated
 
-	cc_tbl = DataFrame(id = cell_clustering)
-	CSV.write("cell_clustering_consensus$nmc.csv", cc_tbl)
-end
+CSV.write("expr_median.csv", expr_median)
+CSV.write("expr_median_norm.csv", expr_med_norm)
+# sampleId = daf.fcstable[ : , :sample_id]
+
+cc_tbl = DataFrame(id = cell_clustering)
+CSV.write("cell_clustering.csv", cc_tbl)
+
 
 cd(cwd)
 # # plotting embed in julia
