@@ -1,5 +1,4 @@
 [deps]
-DistributedArrays = "aaf54ef3-cdf8-58ed-94cc-d582ad619b94"
 MultivariateStats = "6f286f6a-111f-5878-ab1e-185364afe411"
 RCall = "6f49c342-dc21-5d91-9882-a32aef131414"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
