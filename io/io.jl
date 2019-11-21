@@ -1,18 +1,23 @@
+__precompile__()
 using Distributed, XLSX, DataFrames, FileIO
 
-# read directory
-#listFiles = readdir("fcs")
+baseDir = pwd()
+
+# dataPath = "/Users/ohunewald/work/PBMC8_fcs_files"
+dataPath = "/Users/ohunewald/work/GigaSOM.jl/test/data"
+cd(dataPath)
 
 md = DataFrame(XLSX.readtable("PBMC8_metadata.xlsx", "Sheet1", infer_eltypes=true)...)
+md_small = DataFrame(XLSX.readtable("PBMC8_metadata_small.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = DataFrame(XLSX.readtable("PBMC8_panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
-cd("fcs")
+
 
 # local read data function
 nWorkers = 2
 
 addprocs(nWorkers)
-@everywhere using GigaSOM,  DataFrames, FCSFiles
+@everywhere using GigaSOM
 
 @everywhere function loadData(md, panel)
 
@@ -35,12 +40,13 @@ end
 R = Vector{Any}(undef,nworkers())
 
 # load files in parallel
-N = convert(Int64, length(md.file_name)/nWorkers)
-@sync begin
-        for (idx, pid) in enumerate(workers())
-            R[idx] =  fetch(@spawnat pid loadData(md[(idx-1)*N+1:idx*N, :], panel))
-        end
+N = convert(Int64, length(md_small.file_name)/nWorkers)
+
+@show @time @sync begin
+    for (idx, pid) in enumerate(workers())
+        R[idx] =  fetch(@spawnat pid loadData(md_small[(idx-1)*N+1:idx*N, :], panel))
+    end
 end
 
-cd("..")
+cd(baseDir)
 rmprocs(workers())
