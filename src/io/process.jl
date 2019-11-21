@@ -114,7 +114,7 @@ function createDaFrame(fcsRaw, md, panel; method = "asinh", cofactor = 5, reduce
     end
 
     dfall = vcat(dfall...)
-    daf = daFrame(dfall, md, panel)
+    return dfall
 end
 
 
