@@ -4,9 +4,9 @@ checkDir()
 #create genData and data folder and change dir to dataPath
 cwd = pwd()
 
-datapath = "/Users/ohunewald/work/SysTact/test_metadata"
 # datapath = "/home/users/ohunewald/systact/test_metadata"
 # datapath = "/home/users/ohunewald/systact/data"
+datapath = "/Users/ohunewald/work/SysTact/test_metadata"
 
 cd(datapath)
 
