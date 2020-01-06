@@ -30,7 +30,7 @@ function readFlowset(filenames)
         flowDF = flowDF[:, Symbol.(markersIsotope)]
         cleanNames!(markers)
 
-        rename!(flowDF, Symbol.(markers), makeunique=true)
+        names!(flowDF, Symbol.(markers), makeunique=true)
         flowFrame[name] = flowDF
     end
 
@@ -94,13 +94,17 @@ function readSingleFlowFrame(filename)
     # As the dict is not in order, use the name column form meta
     # to sort the Dataframe after cast.
     meta = getMetaData(flowrun)
-    markers = meta[:,1]
-    markersIsotope = meta[:,5]
+    markers = meta[!, Symbol("\$PnS")]
+    markersIsotope = meta[!, Symbol("\$PnN")]
+    # if marker labels are empty use Isotope marker as column names
+    if markers[1] == " "
+        markers = markersIsotope
+    end
     flowDF = DataFrame(flowrun.data)
     # sort the DF according to the marker list
     flowDF = flowDF[:, Symbol.(markersIsotope)]
     cleanNames!(markers)
-    rename!(flowDF, Symbol.(markers), makeunique=true)
+    names!(flowDF, Symbol.(markers), makeunique=true)
 
     return flowDF
 end
