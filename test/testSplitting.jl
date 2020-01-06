@@ -1,6 +1,6 @@
 using GigaSOM, FileIO, Test, Serialization, FCSFiles, DataFrames
 
-include("src/satellites.jl")
+include("../src/satellites.jl")
 
 location = ENV["HOME"]*"/work/artificial_data_cytof"
 mdFileName = location*"/metadata.xlsx"
