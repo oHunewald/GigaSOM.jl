@@ -48,7 +48,7 @@ function cleanNames!(mydata)
                 colnames[i] = Symbol("_" * String(colnames[i]))
             end
         end
-        rename!(mydata, colnames)
+        names!(mydata, colnames)
     else
         for j in eachindex(mydata)
             mydata[j] = replace(mydata[j], "-"=>"_")
@@ -226,7 +226,7 @@ function getMetaData(f)
     end
 
     # set the names of the df
-    rename!(df, Symbol.(column_names))
+    names!(df, Symbol.(column_names))
 
     return df
 end
