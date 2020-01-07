@@ -1,16 +1,17 @@
 using GigaSOM, FileIO, Test, Serialization, FCSFiles, DataFrames
 
-include("satellites.jl")
+include("../src/satellites.jl")
 
+# location = "/Users/ohunewald/work/artificial_data_cytof"
 location = ENV["HOME"]*"/Archive_AF_files"
 mdFileName = location*"/metadata.xlsx"
 
 # read the directory and their metadata
 fileDir = readdir(location)
-md = GigaSOM.DataFrame(GigaSOM.XLSX.readtable(mdFileName, "Sheet1")...)
+md = GigaSOM.DataFrame(GigaSOM.XLSX.readtable(mdFileName, "Sheet1", infer_eltypes=true)...)
 
 # read in all the files in 1 go and concatenate
-fileNames = []
+fileNames = String[]
 for f in sort(md.file_name)
     push!(fileNames, location * "/" * f)
 end
