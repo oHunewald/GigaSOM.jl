@@ -284,7 +284,7 @@ Determine which files need to be opened and read from
 - `iStart`: Global start index
 - `iEnd`: Global end index
 """
-function getFiles(worker, nWorkers, fileL, lastFileL, printLevel=0)
+function getFiles(worker, nWorkers, fileL, lastFileL, runSum, printLevel=0)
     # define the global indices per worker
     iStart = Int((worker - 1) * fileL + 1)
     iEnd = Int(worker * fileL)
@@ -391,7 +391,7 @@ function ocLocalFile(out, worker, k, inSize, localStart, localEnd, slack, filePa
         if printLevel > 0
             @info " > Opening file $(fileNames[k]) ..."
         end
-        inFile = readSingleFlowFrame(filePath*"/"*fileNames[k])
+        inFile = readFlowFrame(filePath*"/"*fileNames[k])
     end
 
     # set a flag to open a new file or not
@@ -440,7 +440,7 @@ function generateIO(filePath, md, nWorkers, generateFiles=true, printLevel=0, sa
     fileNames = sort(md.file_name)
 
     for worker in 1:nWorkers
-        ioFiles, iStart, iEnd = getFiles(worker, nWorkers, fileL, lastFileL, printLevel)
+        ioFiles, iStart, iEnd = getFiles(worker, nWorkers, fileL, lastFileL, runSum, printLevel)
         for k in ioFiles
             localStart, localEnd = detLocalPointers(k, inSize, runSum, iStart, iEnd, slack, fileNames, printLevel)
 
