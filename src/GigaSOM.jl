@@ -12,10 +12,12 @@ module GigaSOM
     using Distances
     using Distributed
     using Distributions
+    using FCSFiles
     using FileIO
     using DistributedArrays
     using XLSX
     using NearestNeighbors
+    using Serialization
 
     include("structs.jl")
     include("core.jl")

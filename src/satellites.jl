@@ -167,14 +167,14 @@ function checkDir()
 end
 
 """
-    getTotalSize(location, md, printLevel=0)
+    getTotalSize(loc, md, printLevel=0)
 
 Get the total size of all the files specified in the metadata file
 and at the given location.
 
 # INPUTS
 
-- `location`: Absolute path of the files specified in the metadata file
+- `loc`: Absolute path of the files specified in the metadata file
 - `md`: Metadata table
 - `printLevel`: Verbose level (0: mute)
 
@@ -184,7 +184,7 @@ and at the given location.
 - `inSize`: Vector with the lengths of each file within the input data set
 - `runSum`: Running sum of the `inSize` vector (`runSum[end] == totalSize`)
 """
-function getTotalSize(location, md, printLevel=0)
+function getTotalSize(loc, md, printLevel=0)
     global totalSize, tmpSum
 
     # define the file names
@@ -199,7 +199,7 @@ function getTotalSize(location, md, printLevel=0)
     totalSize = 0
     inSize = []
     for f in fileNames
-        f = location * "/" * f
+        f = loc * "/" * f
         open(f) do io
             # retrieve the offsets
             offsets = FCSFiles.parse_header(io)
@@ -266,7 +266,7 @@ function splitting(totalSize, nWorkers, printLevel=0)
 end
 
 """
-    getFiles(worker, nWorkers, fileL, lastFileL, printLevel=0)
+    getFiles(worker, nWorkers, fileL, lastFileL, runSum, printLevel=0)
 
 Determine which files need to be opened and read from
 
@@ -276,6 +276,7 @@ Determine which files need to be opened and read from
 - `nWorkers`: Number of workers
 - `fileL`: Length of each file apart from the last one
 - `lastFileL`: Length of the last file
+- `runSum`: running sum
 - `printLevel`: Verbose level (0: mute)
 
 # OUTPUTS
@@ -421,7 +422,7 @@ end
 function generateIO(filePath, md, nWorkers, generateFiles=true, printLevel=0, saveIndices=false)
 
     # determin the total size, the vector with sizes, and their running sum
-    totalSize, inSize, runSum = getTotalSize(location, md, printLevel)
+    totalSize, inSize, runSum = getTotalSize(filePath, md, printLevel)
 
     # determine the size of each file
     fileL, lastFileL = splitting(totalSize, nWorkers, printLevel)
