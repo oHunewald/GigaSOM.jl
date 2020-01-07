@@ -45,7 +45,8 @@ module GigaSOM
     export #input
         readFlowset,
         readFlowFrame,
-        loadData
+        loadData,
+        generateIO
 
     export #satellites
         cleanNames!,
