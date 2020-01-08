@@ -30,7 +30,7 @@ X = zeros(100, length(lineageMarkers))
 for i in 1:length(randWorkers)
     element = randWorkers[i]
     # dereference and get one random sample from matrix
-    Y = R[element][1].x[rand(1:size(R[element][1].x, 1), 1),:]
+    Y = R[element].x[rand(1:size(R[element].x, 1), 1),:]
     # convert Y into vector
     X[i, :] = vec(Y)
 end
@@ -39,9 +39,7 @@ som = initGigaSOM(X, 10, 10)
 
 cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
 
-@time @sync for (idx, pid) in enumerate(workers())
-    @async R[idx] = fetch(@spawnat pid trainGigaSOM(R[idx][1], R, cc))
-end
+@time som = trainGigaSOM(som, R, cc)
 
 rmprocs(workers())
 cd(cwd)
