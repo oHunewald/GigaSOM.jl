@@ -88,7 +88,8 @@ Load the data in parallel
 function loadData(idx, fn, md, panel; method = "asinh", cofactor = 5,
                             reduce = true, sort = true)
 
-    fcsRaw = readFlowFrame(fn)
+    y = open(deserialize, fn)
+    fcsRaw = y[idx]
     cleanNames!(fcsRaw)
 
     # extract lineage markers
@@ -104,8 +105,8 @@ function loadData(idx, fn, md, panel; method = "asinh", cofactor = 5,
 
     # get the sample_id from md
     # return value is an array with only one entry -> take [1]
-    sid = md.sample_id[md.file_name .== fn][1]
-    insertcols!(fcsData, 1, sample_id = sid)
+    # sid = md.sample_id[md.file_name .== fn][1]
+    # insertcols!(fcsData, 1, sample_id = sid)
 
     # return a reference to dfall to be used by trainGigaSOM
     dfallRefMatrix = convertTrainingData(fcsData[:, cc])
