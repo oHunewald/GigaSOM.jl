@@ -112,5 +112,5 @@ function loadData(idx, fn, md, panel; method = "asinh", cofactor = 5,
     dfallRefMatrix = convertTrainingData(fcsData[:, cc])
     dfallRef = Ref{Array{Float64, 2}}(dfallRefMatrix)
 
-    return (dfallRef, myid())
+    return (dfallRef)
 end
