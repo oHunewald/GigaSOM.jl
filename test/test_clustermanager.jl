@@ -12,12 +12,12 @@ cwd = pwd()
 
 dataPath = "/home/users/ohunewald/data"
 cd(dataPath)
-md = GigaSOM.DataFrame(GigaSOM.XLSX.readtable("metadata_100.xlsx", "Sheet1", infer_eltypes=true)...)
+md = GigaSOM.DataFrame(GigaSOM.XLSX.readtable("metadata_8.xlsx", "Sheet1", infer_eltypes=true)...)
 panel = GigaSOM.DataFrame(GigaSOM.XLSX.readtable("panel.xlsx", "Sheet1", infer_eltypes=true)...)
 
 lineageMarkers, functionalMarkers = getMarkers(panel)
 
-nWorkers = 20
+nWorkers = 4
 using ClusterManagers
 addprocs(SlurmManager(nWorkers), topology=:master_worker)
 @everywhere using GigaSOM
