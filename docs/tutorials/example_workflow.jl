@@ -1,9 +1,4 @@
-# Test the GigaSOM package first:
-import Pkg
-Pkg.activate("GigaSOM")
-Pkg.update()
 
-#Pkg.test("GigaSOM")
 using Distributed
 using GigaSOM
 
@@ -25,8 +20,8 @@ addprocs(nWorkers, topology=:master_worker)
 # use '_' or just "R, " to ignore the second return value
 # second return value is used later for indexing the data files
 R, _ = loadData(dataPath, md, nWorkers, panel=panel, reduce=true, transform=true)
-
-som = initGigaSOM(R, 10, 10)
+Rtemp = deepcopy(R)
+som = initGigaSOM(Rtemp, 10, 10)
 
 cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
 
