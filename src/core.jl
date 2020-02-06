@@ -14,14 +14,16 @@ function initGigaSOM(R::Array{Any,1}, xdim, ydim = xdim;
              norm::Symbol = :none, toroidal = false)
 
     numCodes = xdim * ydim
-    nCols = size(R[1].x,2)
+    tmp = fetch(R[1]) # fetch only temp
+    nCols = size(tmp.x,2)
     randWorkers = rand(1:nworkers(), numCodes)
     X = zeros(numCodes, nCols)
 
     for i in 1:length(randWorkers)
         element = randWorkers[i]
+        tmp = fetch(R[element])
         # dereference and get one random sample from matrix
-        Y = R[element].x[rand(1:size(R[element].x, 1), 1),:]
+        Y = tmp.x[rand(1:size(tmp.x, 1), 1),:]
         # convert Y into vector
         X[i, :] = vec(Y)
     end
