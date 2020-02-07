@@ -32,7 +32,7 @@ function initGigaSOM(R::Array{Any,1}, xdim, ydim = xdim;
     # normParams = convert(DataFrame, normParams)
 
     # initialise the codes with random samples from workers
-    codes = rand(xdim,ydim)
+    codes = rand(100,24)
     grid = gridRectangular(xdim, ydim)
 
     # create X,Y-indices for neurons:
@@ -277,19 +277,25 @@ vectors and the adjustment in radius after each epoch.
 - `codes`: Codebook
 - `tree`: knn-compatible tree built upon the codes
 """
-function doEpoch(x::Ref, codes::Array{Float64, 2}, tree)
+function doEpoch(F::Future, codes::Array{Float64, 2}, tree)
 
     # initialise numerator and denominator with 0's
     sumNumerator = zeros(Float64, size(codes))
     sumDenominator = zeros(Float64, size(codes)[1])
 
-    for s in 1:size(x.x, 1)
+    if typeof(F) == Future
+        x = fetch(F)
+    else
+        x = F
+    end
 
-        (bmuIdx, bmuDist) = knn(tree, x.x[s, :], 1)
+    for s in 1:size(x, 1)
+
+        (bmuIdx, bmuDist) = knn(tree, x[s, :], 1)
 
         target = bmuIdx[1]
 
-        sumNumerator[target, :] .+= x.x[s, :]
+        sumNumerator[target, :] .+= x[s, :]
         sumDenominator[target] += 1
     end
 
