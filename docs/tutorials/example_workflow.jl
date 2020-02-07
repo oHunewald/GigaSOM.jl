@@ -27,9 +27,9 @@ cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
 
 @time som = trainGigaSOM(som, R)
 
-winners = mapToGigaSOM(som, R)
+# winners = mapToGigaSOM(som, R)
 
-embed = embedGigaSOM(som, R, k=10, smooth=0.0, adjust=0.5)
+# embed = embedGigaSOM(som, R, k=10, smooth=0.0, adjust=0.5)
 
 rmprocs(workers())
 cd(cwd)
