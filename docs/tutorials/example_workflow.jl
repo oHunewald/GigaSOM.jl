@@ -25,7 +25,8 @@ som = initGigaSOM(Rtemp, 10, 10)
 
 cc = map(Symbol, vcat(lineageMarkers, functionalMarkers))
 
-@time som = trainGigaSOM(som, R)
+Rtemp2 = deepcopy(R)
+@time som = trainGigaSOM(som, Rtemp2)
 
 winners = mapToGigaSOM(som, R)
 
