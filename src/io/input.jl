@@ -170,11 +170,11 @@ function loadDataFile(idx, fn, panel, method, cofactor, reduce, sort, transform)
 
     # return a reference to dfall to be used by trainGigaSOM
     dfallRefMatrix = convertTrainingData(fcsData[:, cc])
-    dfallRef = Ref{Array{Float64, 2}}(dfallRefMatrix)
+    # dfallRef = Ref{Array{Float64, 2}}(dfallRefMatrix)
 
     # remove all the temp file
     rmFile(fn)
 
-    return (dfallRef)
+    return (dfallRefMatrix)
 end
 
