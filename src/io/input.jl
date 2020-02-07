@@ -107,8 +107,8 @@ function loadData(dataPath, data, nWorkers; panel=Nothing(),
     # Please note that all optional arguments are by default "false"
     if type == "fcs"
         @sync for (idx, pid) in enumerate(workers())
-            @async R[idx] = fetch(@spawnat pid loadDataFile(idx, "input-$idx.jls", panel, method,
-                                cofactor,reduce, sort, transform))
+            @async R[idx] = @spawnat pid loadDataFile(idx, "input-$idx.jls", panel, method,
+                                cofactor,reduce, sort, transform)
         end
     else
         @error "File Type not yet supported!"
