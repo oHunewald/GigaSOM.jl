@@ -14,25 +14,24 @@ function initGigaSOM(R::Array{Any,1}, xdim, ydim = xdim;
              norm::Symbol = :none, toroidal = false)
 
     numCodes = xdim * ydim
-#= This code is temporary disabled, for testing only!
-    nCols = size(R[1].x,2)
-    randWorkers = rand(1:nworkers(), numCodes)
-    X = zeros(numCodes, nCols)
+    tmp = fetch(R[1])
+    nCols = size(tmp,2)
+    # randWorkers = rand(1:nworkers(), numCodes)
+    # X = zeros(numCodes, nCols)
 
-    for i in 1:length(randWorkers)
-        element = randWorkers[i]
-        # dereference and get one random sample from matrix
-        Y = R[element].x[rand(1:size(R[element].x, 1), 1),:]
-        # convert Y into vector
-        X[i, :] = vec(Y)
-    end
-=# 
+    # for i in 1:length(randWorkers)
+    #     element = randWorkers[i]
+    #     # dereference and get one random sample from matrix
+    #     Y = tmp[element][rand(1:size(tmp[element], 1), 1),:]
+    #     # convert Y into vector
+    #     X[i, :] = vec(Y)
+    # end
 
     # TODO: Normalization need to be adjusted for distributed loading
     # normParams = convert(DataFrame, normParams)
 
     # initialise the codes with random samples from workers
-    codes = rand(100,24)
+    codes = rand(numCodes,nCols)
     grid = gridRectangular(xdim, ydim)
 
     # create X,Y-indices for neurons:
