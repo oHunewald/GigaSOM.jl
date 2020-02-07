@@ -277,11 +277,16 @@ vectors and the adjustment in radius after each epoch.
 - `codes`: Codebook
 - `tree`: knn-compatible tree built upon the codes
 """
-function doEpoch(x::Ref, codes::Array{Float64, 2}, tree)
+function doEpoch(x::Future, codes::Array{Float64, 2}, tree)
 
     # initialise numerator and denominator with 0's
     sumNumerator = zeros(Float64, size(codes))
     sumDenominator = zeros(Float64, size(codes)[1])
+
+    # if not yet fetched:
+    if typeof(x) == Future
+        x = fetch(x)
+    end
 
     for s in 1:size(x.x, 1)
 
