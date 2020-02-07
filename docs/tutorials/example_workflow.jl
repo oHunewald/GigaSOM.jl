@@ -1,9 +1,4 @@
-# Test the GigaSOM package first:
-import Pkg
-Pkg.activate("GigaSOM")
-Pkg.update()
 
-#Pkg.test("GigaSOM")
 using Distributed
 using GigaSOM
 
