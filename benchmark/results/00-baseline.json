@@ -1,0 +1,69 @@
+{
+  "blas_threads": 11,
+  "cpu": "Intel(R) Core(TM) Ultra 9 185H",
+  "cpu_threads": 22,
+  "git": {
+    "commit": "1fff45f",
+    "branch": "benchmarks-baseline",
+    "src_dirty": false
+  },
+  "gpu": "NVIDIA RTX 3500 Ada Generation Laptop GPU, 12282 MiB",
+  "julia": "1.11.5",
+  "label": "00-baseline",
+  "results": [
+    {
+      "cells": 100000,
+      "dims": 30,
+      "som": "10x10",
+      "epochs": 5,
+      "workers": 1,
+      "train_s": 2.257860102,
+      "train_per_epoch_s": 0.4515720204,
+      "map_s": 0.06143803,
+      "embed_s": 0.553897855,
+      "cells_per_s_train": 221448.6183431395,
+      "quantization_error": 4.152681585777493
+    },
+    {
+      "cells": 1000000,
+      "dims": 40,
+      "som": "20x20",
+      "epochs": 5,
+      "workers": 1,
+      "train_s": 64.938509978,
+      "train_per_epoch_s": 12.9877019956,
+      "map_s": 3.313349896,
+      "embed_s": 28.973730405,
+      "cells_per_s_train": 76995.9150848073,
+      "quantization_error": 4.397618523872258
+    },
+    {
+      "cells": 100000,
+      "dims": 30,
+      "som": "10x10",
+      "epochs": 5,
+      "workers": 8,
+      "train_s": 0.95979224,
+      "train_per_epoch_s": 0.191958448,
+      "map_s": 0.023796806,
+      "embed_s": 0.18502153,
+      "cells_per_s_train": 520946.074746343,
+      "quantization_error": 4.152681585777493
+    },
+    {
+      "cells": 1000000,
+      "dims": 40,
+      "som": "20x20",
+      "epochs": 5,
+      "workers": 8,
+      "train_s": 16.668797383,
+      "train_per_epoch_s": 3.3337594766,
+      "map_s": 1.28515781,
+      "embed_s": 7.74488853,
+      "cells_per_s_train": 299961.6520085215,
+      "quantization_error": 4.397487917346926
+    }
+  ],
+  "suite": "default",
+  "timestamp": "2026-11-27T08:06:35.787"
+}
