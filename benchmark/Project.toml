@@ -1,0 +1,9 @@
+[deps]
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
+DistributedData = "f6a0035f-c5ac-4ad0-b410-ad102ced35df"
+GigaSOM = "a03a9c34-069e-5582-a11c-5c984cab887c"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NearestNeighbors = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
+StableRNGs = "860ef19b-820b-49d6-a774-d7a799459cd3"
